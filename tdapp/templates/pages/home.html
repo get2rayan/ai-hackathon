@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h2>{% block title %}Home{% endblock title %}</h2>
+{% endblock header %}
+
+{% block content %}
+  <p>
+    <!-- Learn more about this project by visiting the <a href="{{ url_for('pages.about') }}">About</a>. -->
+  </p>
+  <form method="post" action="/">
+    <div class="form-group">
+      <label for="userPrompt">User Prompt</label>
+      <input type="text" name="userPrompt" id="userPrompt"
+              placeholder="User prompt" class="form-control"
+              value="{{ request.form['userPrompt'] }}"></input>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <input type="reset" class="btn btn-secondary" name="Reset">
+    </div>
+    <div class="form-group">
+      <label for="extractedContent">User prompt extracted content</label>
+      <textarea name="extractedContent" placeholder="" id="extractedContent"
+                class="form-control" style="height: 115px;">{{ extract_args }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="recipeSuggestionContent">Recipe suggestion content </label>
+      <textarea name="recipeSuggestionContent" placeholder="" id="recipeSuggestionContent"
+                class="form-control" style="height: 300px;">{{ recipe_resp }}</textarea>
+    </div>
+  </form>
+{% endblock content %}

@@ -1,0 +1,41 @@
+POST https://teamdragons.openai.azure.com/openai/deployments/gpt35turbo16k/extensions/chat/completions?api-version=2023-12-01-preview
+Content-Type: application/json
+api-key: 4db58ef0c961409a975495c1ba64bf8a
+
+{
+  "dataSources": [
+    {
+      "type": "AzureCognitiveSearch",
+      "parameters": {
+        "endpoint": "https://teamdragons-searchsrvc.search.windows.net",
+        "indexName": "meijerdata-index",
+        "semanticConfiguration": "default",
+        "queryType": "vectorSimpleHybrid",
+        "fieldsMapping": {},
+        "inScope": true,
+        "strictness": 3,
+        "topNDocuments": 5,
+        "key": "",
+        "embeddingDeploymentName": "text-embedding-ada-002"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a Meijer bot that suggests recipes based on the time of the day and ingredients specified by user."
+    }
+    { 
+        "role": "user",
+        "content": "Please suggests recipes that I can make using some of the following ingredients: avocado, banana"
+    }
+  ],
+  "deployment": "gpt35turbo16k",
+  "temperature": 0.1,
+  "top_p": 0.5,
+  "max_tokens": 1000,
+  "stop": null,
+  "stream": true,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+}

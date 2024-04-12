@@ -1,0 +1,30 @@
+store,product,department,inventory,price,isinpromotion
+21,mango,produce,20,2.99,Y
+21,banana,produce,15,2.99,N
+21,apple,produce,30,2.99,Y
+21,chicken,meat,40,2.99,Y
+21,shrimp,meat,40,2.99,Y
+21,avocado,produce,10,2.99,Y
+21,eggs,produce,69,2.99,N
+21,fish,meat,35,2.99,Y
+21,beef,meat,20,2.99,Y
+21,milk,produce,100,2.99,N
+21,olive oil,produce,30,2.99,N
+202,beef,meat,20,2.99,Y
+202,milk,produce,100,2.99,N
+202,olive oil,produce,30,2.99,N
+202,spinach,produce,50,2.99,Y
+202,onion,produce,70,2.99,Y
+202,cheese,produce,100,2.99,N
+202,kale,produce,35,2.99,Y
+202,salt,produce,50,2.99,Y
+54,spinach,produce,50,2.99,Y
+54,onion,produce,70,2.99,Y
+54,cheese,produce,100,2.99,N
+54,kale,produce,35,2.99,Y
+54,salt,produce,50,2.99,Y
+54,garlic,produce,70,2.99,Y
+54,pepper,produce,40,2.99,N
+54,sugar,produce,70,2.99,Y
+54,yogurt,produce,4,2.99,Y
+54,raspberry,produce,8,2.99,Y

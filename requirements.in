@@ -1,0 +1,4 @@
+Flask==3.0.3
+openai==1.17.0
+pandas==2.2.2
+python-dotenv==1.0.1
