@@ -1,3 +1,4 @@
 __pycache__
-.aivenv
+nb
+.venv
 .env

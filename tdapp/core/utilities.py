@@ -29,13 +29,16 @@ class Utilities():
         print(f'joined abs path - {os.path.abspath(os.path.join(os.getcwd(), os.pardir))}')
         
 
-    def get_meijer_products(self, filename, storeid=None) -> list:
+    def get_meijer_products(self, filename, storeid=None, category=None) -> list:
         input_file=filename
         
         df = pd.read_csv(os.path.join(Path(os.path.dirname(__file__)).parent, 'data', input_file), header=0)
         
         if storeid and storeid!=0:
             df=df[df['store']==storeid]
+        
+        if category:
+            df=df[df['department'].isin(category)]
             
         d={'Y': 1, 'N': 0}
         df['isinpromotion']=df['isinpromotion'].map(d)
@@ -49,9 +52,12 @@ class Utilities():
         else:
             return []
 
-# ## validate get_meijer_products method
-# val = Utilities().get_meijer_products('meijer_products.csv', None)
-# print(val)
-# ##
 
-# Utilities().pathinfo()
+
+if __name__ == "__main__":
+    ## validate get_meijer_products method
+    val = Utilities().get_meijer_products('meijer_products.csv', 21, ['produce','meat'])
+    print(val)
+    val2 = Utilities().get_meijer_products('meijer_products.csv', 21)
+    print(val2)
+    ##

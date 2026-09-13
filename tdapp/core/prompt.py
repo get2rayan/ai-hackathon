@@ -1,30 +1,36 @@
 import os
-import openai
-import dotenv
-import logging
-from ..functions import recipes
 import json
+import logging
+from openai import OpenAI
+import dotenv
+from ..functions import store_products
+
+try:
+    from .recipe_extraction import RecipeExtraction, StoreCategory
+except ImportError:
+    from recipe_extraction import RecipeExtraction, StoreCategory
+
+dotenv.load_dotenv(override=True)
+
 
 class Prompt():
 
     def __init__(self) -> None:        
-        dotenv.load_dotenv()
-
         use_azure_active_directory = False  # Set this flag to True if you are using Azure Active Directory
 
         if not use_azure_active_directory:
             self.endpoint = os.environ["AZURE_OPENAI_ENDPOINT"]
             self.api_key = os.environ["AZURE_OPENAI_API_KEY"]
             # set the deployment model we want to use
-            self.deploymentid = "gpt-4o"
-            # self.deploymentid = "gpt35turbo16k"
+            self.deploymentid =os.environ["DEPLOYMENT_NAME"]            
         
         # Generic AI client to extract information from user prompt
-        self.client1 = openai.AzureOpenAI(
-            azure_endpoint=self.endpoint,
+        self.client1 = OpenAI(
+            base_url=self.endpoint,
             api_key=self.api_key,
-            api_version="2024-08-01-preview"    #2023-09-01-preview
         )
+
+        print(f"Azure OpenAI client initialized with endpoint: {self.endpoint} and deployment: {self.deploymentid}")
 
         # # AI extension client to work with custom Meijer data
         # self.client2 = openai.AzureOpenAI(
@@ -41,28 +47,28 @@ class Prompt():
                     "type": "function",
                     "function":
                     {
-                        "name": "get_items_for_recipe",
-                        "description": "Get the recipe information based on user input requirement and meijer store product",
+                        "name": "get_items_list",
+                        "description": "Get items from the store based on user input for item category",
                         "parameters": {
                             "type":"object",
                             "properties": {
-                                "storeid": {
+                                "store_id": {
                                     "type": "integer",
-                                    "description": "The store id of Meijer store if specified, eg: 21 for Alpine",
+                                    "description": "store id of Meijer store",
                                 },
                                 "user_ingredients": {
-                                    "type": "string",
-                                    "description": f"""
-                                            Comma separated list of ingredients for the recipe extracted from user's input.
-                                            """
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description":"list of user ingredients."                                
                                 },
-                                "recipe_name":{
-                                    "type": "string",
-                                    "description":"name of the recipe if specified."
-                                },
-                                "serving_size": {
-                                    "type": "integer",
-                                    "description": "The serving size or the portion size based on number of people, eg: 4 for 4 people",
+                                "category":{
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description":"category of the items to fetch from the store."
                                 }
                             },
                             "required": [],
@@ -71,37 +77,35 @@ class Prompt():
                 }
             ]
         )
-    
+
     def extractUserPrompt(self, userPrompt:str) -> str:
-         
+        print(f"User prompt received: {userPrompt}")
         # Below user prompt can signify 
         # 1. a user adding items to cart where the recipe will be based on their cart items / user uses smart devices for managing their shopping list
         # 2. meijer specific products chosen based on criteria at the store like items in promotion / high inventory items at the (can be store specific).
-        system_message = [{ "role": "system", "content": "You are an AI assistant that can extract store info, names of ingredients, recipe name, serving size from the user prompt as a JSON object. Do not assume storeid or ingredients if not specified explicitly." }]
-        user_messages = [ 
-                        {"role": "user", "content": "I am at Meijer store 21 and have banana and milk in my cart"}, {"role": "assistant", "content": "{\"storeid\": 21, \"user_ingredients\": \"banana, milk\"}"}
-                        ,{"role": "user", "content": "I am planning to make chicken fajitas"}, {"role": "assistant", "content": "{\"recipe_name\": \"chicken fajitas\"}"}
-                        ,{"role": "user", "content": "I want to make shrimp scampi but only have shrimp and butter. What else do I need?"}, {"role": "assistant", "content": "{\"recipe_name\": \"shrimp scampi\", user_ingredients=\"shrimp, butter\"}"}
-                        ,{"role": "user", "content": "I am at a Meijer store and wondering what I can make with avocado and egg"}, {"role": "assistant", "content": "{\"user_ingredients\": \"avocado, egg\"}"}
-                        ,{"role": "user", "content": "What do I need to make an Indian dessert?"}, {"role": "assistant", "content": "{\"recipe_name\": \"Vermicelli Kheer\"}"}
-                        ,{"role": "user", "content": "I want to cook something for 6 people. What are my options"}, {"role": "assistant", "content": "{\"serving_size\": 6}"}
-                        ,{"role": "user", "content": "I want to know what items are in Meijer store to make soup"}, {"role": "assistant", "content": "{\"recipe_name\": \"soup\"}"}
-                        ,{"role": "user", "content": "I am looking for a meatball recipe?"}, {"role": "assistant", "content": "{\"recipe_name\": \"meatball\"}"}
-                        ,{"role": "user", "content": "What can I make with meatball for 4 people?"}, {"role": "assistant", "content": "{\"user_ingredient\": \"meatball\", \"serving_size\": 4}"}
-                        ,{"role": "user", "content": "What are some soup options to make"}, {"role": "assistant", "content": "{\"recipe_name\": \"soup\"}"}
-                        ,{"role": "user", "content": "What are some ingredients for making a dessert"}, {"role": "assistant", "content": "{\"recipe_name\": \"dessert\"}"}
-                    ]
-        
+        system_prompt = """
+        You are a data extraction assistant. Your job is to extract information from the user input and return them STRICTLY as a valid JSON object.
+        If a category can be determined from the user input, use the 
+        """
+        system_message = [{ "role": "system", "content": system_prompt }]
         user_prompt_message = [{ "role": "user", "content": userPrompt }]
-        # messages = [system_message, user_messages, user_prompt_message]
-        messages = system_message + user_messages + user_prompt_message
+
+        messages = system_message + user_prompt_message
             
         try: 
             item_response = self.client1.chat.completions.create(
                 model=self.deploymentid,
-                messages=messages,    
+                messages=messages,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "recipe_extraction",
+                        "strict": True,
+                        "schema": RecipeExtraction.model_json_schema()
+                    }
+                },
                 tools=self.tools,
-                tool_choice= "auto" #{"type": "function", "function": { "name": "get_items_for_recipe"} }
+                tool_choice= "auto" #{"type": "function", "function": { "name": "get_store_products"} }
             )
             
             item_message = item_response.choices[0].message
@@ -117,33 +121,27 @@ class Prompt():
 
 
     def get_custom_recipes(self, item_message ) -> str :
+        # return item_message
         recipe_ingredients =None
+        recipe_data = RecipeExtraction.model_validate_json(item_message.content)
+        print(f"recipe_data: {recipe_data}")
         # print(f'item_message: {item_message}')
         # check if the model wanted to call a function
         if dict(item_message).get('tool_calls'):
             available_functions = {
-                "get_items_for_recipe": recipes.recipes().get_items_for_recipe
+                "get_items_list": store_products.recipes().get_items_list
             }
             
             # extracting the functions
             for tool_call in item_message.tool_calls:
-                function_name = tool_call.function.name
-                function_to_call = available_functions[function_name]
+                function_to_call = available_functions[tool_call.function.name]
                 function_args = json.loads(tool_call.function.arguments)
+                function_resp = function_to_call(**function_args)
 
-                storeid = function_args.get('storeid')
-                recipe_name = function_args.get('recipe_name')
-                serving_size = function_args.get('serving_size')
-                user_ingredients=function_args.get('user_ingredients')
-
-                function_resp = function_to_call(
-                    storeid=storeid
-                    ,user_ingredients=user_ingredients
-                )
-                print(f"function_args : {function_args} - storeid :{function_args.get('storeid')}  - user_ingredients: {function_args.get('user_ingredients')} - recipe_name: {function_args.get('recipe_name')} - serving_size: {function_args.get('serving_size')}")
+                print(f"function_args : {function_args} \n store_id :{recipe_data.store_id}  - category: {recipe_data.category} - user_ingredients: {recipe_data.user_ingredients} - recipe_name: {recipe_data.recipe_name} - serving_size: {recipe_data.serving_size}")
                 recipe_ingredients=function_resp    
         else:
-            recipe_ingredients=recipes.recipes().get_items_for_recipe()
+            recipe_ingredients=store_products.recipes().get_items_list()
 
         print(f"recipe_ingredients : {recipe_ingredients}")
 
@@ -154,19 +152,23 @@ class Prompt():
                     ,{ "role": "user", "content": "How do I make make a meatball recipe for 4 people"}
                     ,{ "role": "assistant", "content": "{\"recipe\": \"AlFez Moroccan Meatballs\",\"needed_ingredients\": [\"12 Meatballs\",\"1 Tbsp Olive oil\",\"1 Jar AlFez  Moroccan Meatball Sauce\",\"Fresh coriander (for garnish)\",\"5 cups Cooked rice or couscous\"],\"instructions\":[\"1.\tIn a heated pan (or in the oven), brown the meatballs in oil, about 5 min.\"\r\n\"2.\tAdd the Al’FezTM Moroccan Meatball Sauce and simmer until the meatballs are cooked, about 20 min.\"\r\n\"3.\tServe over a be of rice or couscous. Garnish with fresh coriander.\"]}"}
                 ]
-            
-        if(recipe_name and serving_size and user_ingredients):
-            user_content = f"How do I make {recipe_name} for {serving_size} people when I have {user_ingredients}"
+
+        recipe_name = recipe_data.recipe_name
+        serving_size = recipe_data.serving_size
+
+
+        if(recipe_name and serving_size and recipe_ingredients):
+            user_content = f"How do I make {recipe_name} for {serving_size} people when I have {recipe_ingredients}"
         elif (recipe_name and serving_size):
             user_content = f"How do I make {recipe_name} for {serving_size} people"
-        elif (recipe_name and user_ingredients):
-            user_content = f"How do I make {recipe_name} and I have {user_ingredients}"        
-        elif (serving_size and user_ingredients):
+        elif (recipe_name and recipe_ingredients):
+            user_content = f"How do I make {recipe_name} and I have {recipe_ingredients}"        
+        elif (serving_size and recipe_ingredients):
             user_content = f"Please suggest a recipe that I can make using {recipe_ingredients} and I need to prepare meal for {serving_size} people"
         elif (recipe_name):
             user_content = f"How do I make {recipe_name}"
         elif (serving_size):
-            user_content = f"How do I make a meal for {serving_size} people"    
+            user_content = f"How do I make a meal for {serving_size} people"
         else:
             user_content=f"Suggest a recipe that I can make using most of the following ingredients: {recipe_ingredients}"
 
@@ -201,3 +203,12 @@ class Prompt():
         recipe_message = recipe_response.choices[0].message
         print(recipe_message)
         return recipe_message.content
+
+
+if __name__ == "__main__":
+    prompt_instance = Prompt()
+    # Example usage
+    response = prompt_instance.extractUserPrompt(
+        "I am at Meijer store 21 and I have tomtoes, ground beef, and onions. I am thinking of making some Mediteranean dish."
+    )
+    print(response)
