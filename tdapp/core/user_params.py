@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 StoreCategory = Literal["produce", "dairy", "bakery", "meat", "pantry", "frozen", "seafood"]
 
 
-class RecipeExtraction(BaseModel):
+class UserIntent(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     store_id: Optional[int] = Field(..., description="Id of the grocery store or supermarket.")

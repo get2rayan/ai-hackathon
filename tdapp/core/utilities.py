@@ -1,6 +1,9 @@
+import mysql.connector
+from mysql.connector import Error
 import pandas as pd
 import os
 from pathlib import Path
+
 
 class Utilities():
 
@@ -29,7 +32,7 @@ class Utilities():
         print(f'joined abs path - {os.path.abspath(os.path.join(os.getcwd(), os.pardir))}')
         
 
-    def get_meijer_products(self, filename, storeid=None, category=None) -> list:
+    def get_store_products_from_file(self, filename, storeid=None, category: list=None) -> list:
         input_file=filename
         
         df = pd.read_csv(os.path.join(Path(os.path.dirname(__file__)).parent, 'data', input_file), header=0)
@@ -53,11 +56,63 @@ class Utilities():
             return []
 
 
+    def get_store_products(self, storeid=None, category: list[str]=None) -> list:
+        connection = None
+        try:
+            # TODO: Implement MySQLConnectionPool connection pooling & call connection=pool.get_connection() instead of mysql.connector.connect()
+            connection = mysql.connector.connect(
+                host=os.getenv("MYSQL_HOST"),
+                user=os.getenv("MYSQL_USER"),
+                password=os.getenv("MYSQL_PASSWORD"),
+                database=os.getenv("MYSQL_DB"),
+                port=os.getenv("MYSQL_PORT")
+            )
+
+            if connection.is_connected():
+                print("Connected to MySQL database")
+                
+                # create cursor object
+                with connection.cursor(dictionary=True) as cursor:
+                    query = "SELECT product FROM store_items"
+
+                    # dynamic filter structures
+                    conditions = []
+                    query_params = []
+
+                    if storeid and storeid!=0:
+                        conditions.append("store=%s")
+                        query_params.append(storeid)
+                    if category:
+                        conditions.append("department IN (%s)" % ','.join(['%s'] * len(category)))
+                        query_params.extend(category)
+
+                    if conditions:
+                        query += " WHERE " + " AND ".join(conditions)
+                    
+                    # promote isinpromotion items
+                    query += " ORDER BY isinpromotion DESC"
+
+                    print(f"Executing query: {query} with params: {query_params}")
+
+                    cursor.execute(query, query_params)
+                    result = cursor.fetchall()
+                    print(f"Query result: {result}")
+                    return result
+            else:
+                print("Failed to connect to MySQL database")
+                return []
+        except Error as e:
+            print(f"Error: {e}")
+            return []
+        finally:
+            if connection and connection.is_connected():
+                connection.close()
+
 
 if __name__ == "__main__":
     ## validate get_meijer_products method
-    val = Utilities().get_meijer_products('meijer_products.csv', 21, ['produce','meat'])
+    val = Utilities().get_store_products(21, ['produce','meat'])
     print(val)
-    val2 = Utilities().get_meijer_products('meijer_products.csv', 21)
+    val2 = Utilities().get_store_products(202)
     print(val2)
     ##

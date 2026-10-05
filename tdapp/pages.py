@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, render_template, request
-from .core import prompt
+from .core.prompt_handler import PromptHandler
 
 bp=Blueprint("pages", __name__)
 
@@ -13,8 +13,8 @@ def home():
             flash('Please enter a valid user prompt')
             return render_template("pages/home.html")
         else:           
-            p = prompt.Prompt() 
-            extract_resp = p.extractUserPrompt(userprompt)            
+            p = PromptHandler() 
+            extract_resp = p.extractUserIntent(userprompt)            
             recipe_resp = p.get_custom_recipes(extract_resp)
 
             if extract_resp.tool_calls is not None:
