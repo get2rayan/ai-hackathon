@@ -5,9 +5,9 @@ from openai import OpenAI
 import dotenv
 
 try:
-    from .user_params import UserIntent
+    from .state import UserIntent
 except ImportError:
-    from user_params import UserIntent
+    from state import UserIntent
 
 dotenv.load_dotenv(override=True)
 

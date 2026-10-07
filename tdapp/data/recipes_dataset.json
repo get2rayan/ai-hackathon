@@ -1,0 +1,1534 @@
+[
+  {
+    "id": 1,
+    "name": "Classic Margherita Pizza",
+    "cuisine": "Italian",
+    "ingredients": [
+      "2 cups all-purpose flour",
+      "1 teaspoon instant yeast",
+      "1 teaspoon salt",
+      "3/4 cup warm water",
+      "1 tablespoon olive oil",
+      "1/2 cup tomato sauce",
+      "1 cup fresh mozzarella cheese",
+      "Fresh basil leaves",
+      "Olive oil for drizzling"
+    ],
+    "instructions": "Mix flour, yeast, salt, and water to form a dough. Knead for 10 minutes, then let rise for 1 hour. Roll out dough and spread tomato sauce. Add mozzarella cheese and fresh basil. Bake at 475°F (245°C) for 12-15 minutes. Drizzle with olive oil before serving.",
+    "cooktime_minutes": 65,
+    "nutrition": {
+      "calories": 320,
+      "protein": 12,
+      "carbohydrates": 45,
+      "fat": 14,
+      "fiber": 3,
+      "sodium": 620
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 2,
+    "name": "Chicken Tikka Masala",
+    "cuisine": "Indian",
+    "ingredients": [
+      "2 lbs chicken breast, cut into chunks",
+      "1 cup plain yogurt",
+      "2 tablespoons ginger-garlic paste",
+      "1 tablespoon garam masala",
+      "1 teaspoon turmeric powder",
+      "2 tablespoons tomato paste",
+      "1 cup heavy cream",
+      "1 cup chopped tomatoes",
+      "2 tablespoons vegetable oil",
+      "Fresh cilantro for garnish"
+    ],
+    "instructions": "Marinate chicken in yogurt, ginger-garlic paste, garam masala, and turmeric for 30 minutes. Grill or bake chicken until cooked through. Sauté onions, tomatoes, and tomato paste in oil. Add spices and cream, simmer for 10 minutes. Add chicken and cook for 5 more minutes. Garnish with cilantro.",
+    "cooktime_minutes": 60,
+    "nutrition": {
+      "calories": 450,
+      "protein": 25,
+      "carbohydrates": 35,
+      "fat": 22,
+      "fiber": 4,
+      "sodium": 780
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 3,
+    "name": "Beef and Broccoli Stir-Fry",
+    "cuisine": "Chinese",
+    "ingredients": [
+      "1 lb beef sirloin, thinly sliced",
+      "1 lb broccoli florets",
+      "2 cloves garlic, minced",
+      "1 tablespoon soy sauce",
+      "1 tablespoon oyster sauce",
+      "1 tablespoon cornstarch",
+      "2 tablespoons vegetable oil",
+      "1 teaspoon sesame oil",
+      "Cooked white rice for serving"
+    ],
+    "instructions": "Mix beef with soy sauce and cornstarch. Heat oil in a wok, cook beef until browned. Remove beef, add broccoli and garlic to stir-fry for 3 minutes. Return beef to wok, add oyster sauce and sesame oil. Toss everything together and serve over rice.",
+    "cooktime_minutes": 25,
+    "nutrition": {
+      "calories": 380,
+      "protein": 28,
+      "carbohydrates": 42,
+      "fat": 12,
+      "fiber": 5,
+      "sodium": 890
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 4,
+    "name": "Vegetarian Buddha Bowl",
+    "cuisine": "Asian",
+    "ingredients": [
+      "1 cup cooked quinoa",
+      "1 cup roasted vegetables (carrots, bell peppers, zucchini)",
+      "1/2 avocado, sliced",
+      "1/4 cup black beans",
+      "2 tablespoons tahini dressing",
+      "1 tablespoon sesame seeds",
+      "Fresh mint leaves for garnish"
+    ],
+    "instructions": "Cook quinoa according to package directions. Roast vegetables with olive oil and seasonings. Combine quinoa, vegetables, avocado, and black beans in a bowl. Drizzle with tahini dressing, sprinkle with sesame seeds, and garnish with mint.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 420,
+      "protein": 15,
+      "carbohydrates": 58,
+      "fat": 14,
+      "fiber": 12,
+      "sodium": 420
+    },
+    "serving_size": 2
+  },
+  {
+    "id": 5,
+    "name": "Chocolate Chip Cookies",
+    "cuisine": "American",
+    "ingredients": [
+      "2 1/4 cups all-purpose flour",
+      "1 teaspoon baking soda",
+      "1 teaspoon salt",
+      "1 cup butter, softened",
+      "3/4 cup granulated sugar",
+      "3/4 cup brown sugar",
+      "2 large eggs",
+      "2 teaspoons vanilla extract",
+      "2 cups semisweet chocolate chips"
+    ],
+    "instructions": "Preheat oven to 375°F (190°C). Mix flour, baking soda, and salt. In a separate bowl, cream butter, sugars, eggs, and vanilla. Gradually mix dry ingredients into wet ingredients. Fold in chocolate chips. Drop rounded tablespoons of dough onto ungreased baking sheets. Bake for 9-11 minutes.",
+    "cooktime_minutes": 20,
+    "nutrition": {
+      "calories": 180,
+      "protein": 3,
+      "carbohydrates": 28,
+      "fat": 9,
+      "fiber": 2,
+      "sodium": 150
+    },
+    "serving_size": 24
+  },
+  {
+    "id": 6,
+    "name": "Pad Thai",
+    "cuisine": "Thai",
+    "ingredients": [
+      "8 oz rice noodles",
+      "2 tablespoons vegetable oil",
+      "2 cloves garlic, minced",
+      "8 oz shrimp, peeled",
+      "2 eggs",
+      "1 cup bean sprouts",
+      "3 tablespoons fish sauce",
+      "2 tablespoons tamarind paste",
+      "1 tablespoon sugar",
+      "Crushed peanuts for garnish",
+      "Lime wedges"
+    ],
+    "instructions": "Soak rice noodles in warm water for 20 minutes, then drain. Heat oil in a wok, sauté garlic, then add shrimp and cook until pink. Push shrimp aside, scramble eggs. Add noodles, fish sauce, tamarind paste, and sugar. Toss everything together. Add bean sprouts, cook 1 minute. Serve with crushed peanuts and lime wedges.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 410,
+      "protein": 22,
+      "carbohydrates": 48,
+      "fat": 14,
+      "fiber": 3,
+      "sodium": 950
+    },
+    "serving_size": 2
+  },
+  {
+    "id": 7,
+    "name": "Japanese Miso Soup",
+    "cuisine": "Japanese",
+    "ingredients": [
+      "4 cups dashi broth",
+      "3 tablespoons white miso paste",
+      "1/2 block silken tofu, cubed",
+      "2 green onions, sliced",
+      "1 sheet nori seaweed, torn",
+      "1/4 cup wakame seaweed, rehydrated"
+    ],
+    "instructions": "Bring dashi broth to a simmer. Add tofu and wakame, cook for 2 minutes. Reduce heat to low. Dissolve miso paste in a ladle of broth, then stir back into pot. Do not boil after adding miso. Garnish with green onions and nori. Serve immediately.",
+    "cooktime_minutes": 15,
+    "nutrition": {
+      "calories": 80,
+      "protein": 7,
+      "carbohydrates": 8,
+      "fat": 3,
+      "fiber": 2,
+      "sodium": 720
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 8,
+    "name": "Tacos al Pastor",
+    "cuisine": "Mexican",
+    "ingredients": [
+      "1 lb pork shoulder, thinly sliced",
+      "3 dried guajillo chiles",
+      "1/4 cup pineapple juice",
+      "2 tablespoons achiote paste",
+      "1 teaspoon cumin",
+      "1/2 fresh pineapple, diced",
+      "8 corn tortillas",
+      "1/2 cup chopped cilantro",
+      "1/2 cup diced onion",
+      "Lime wedges"
+    ],
+    "instructions": "Blend guajillo chiles, pineapple juice, achiote paste, and cumin into a marinade. Marinate pork for 4 hours. Grill or pan-sear pork and pineapple until charred. Chop pork into small pieces. Warm tortillas, fill with pork and pineapple. Top with cilantro, onion, and a squeeze of lime.",
+    "cooktime_minutes": 60,
+    "nutrition": {
+      "calories": 380,
+      "protein": 26,
+      "carbohydrates": 35,
+      "fat": 16,
+      "fiber": 5,
+      "sodium": 540
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 9,
+    "name": "Greek Moussaka",
+    "cuisine": "Greek",
+    "ingredients": [
+      "2 large eggplants, sliced",
+      "1 lb ground lamb",
+      "1 onion, diced",
+      "2 cloves garlic, minced",
+      "1 can crushed tomatoes",
+      "1 teaspoon cinnamon",
+      "1/2 teaspoon allspice",
+      "3 tablespoons butter",
+      "3 tablespoons flour",
+      "2 cups milk",
+      "1/2 cup grated Parmesan cheese",
+      "1 egg, beaten"
+    ],
+    "instructions": "Salt eggplant slices and let sit 30 minutes, then pat dry and pan-fry until golden. Sauté onion, garlic, and lamb. Add tomatoes, cinnamon, and allspice; simmer 20 minutes. Make béchamel: melt butter, whisk in flour, add milk, stir until thick. Remove from heat, stir in cheese and egg. Layer eggplant and meat sauce in a dish, top with béchamel. Bake at 375°F for 40 minutes.",
+    "cooktime_minutes": 90,
+    "nutrition": {
+      "calories": 520,
+      "protein": 28,
+      "carbohydrates": 32,
+      "fat": 30,
+      "fiber": 7,
+      "sodium": 680
+    },
+    "serving_size": 6
+  },
+  {
+    "id": 10,
+    "name": "Moroccan Chicken Tagine",
+    "cuisine": "Moroccan",
+    "ingredients": [
+      "2 lbs chicken thighs",
+      "1 onion, sliced",
+      "2 cloves garlic, minced",
+      "1 teaspoon ginger",
+      "1 teaspoon cinnamon",
+      "1/2 teaspoon saffron threads",
+      "1 cup green olives",
+      "1 preserved lemon, quartered",
+      "1/2 cup chicken broth",
+      "2 tablespoons olive oil",
+      "Fresh parsley"
+    ],
+    "instructions": "Brown chicken in olive oil, then set aside. Sauté onion and garlic until soft. Add ginger, cinnamon, and saffron; cook 1 minute. Return chicken to pot, add broth, olives, and preserved lemon. Cover and simmer for 45 minutes until chicken is tender. Garnish with parsley. Serve with couscous.",
+    "cooktime_minutes": 60,
+    "nutrition": {
+      "calories": 440,
+      "protein": 32,
+      "carbohydrates": 10,
+      "fat": 28,
+      "fiber": 3,
+      "sodium": 860
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 11,
+    "name": "Spanish Paella",
+    "cuisine": "Spanish",
+    "ingredients": [
+      "1 1/2 cups bomba rice",
+      "4 cups chicken broth",
+      "1/2 lb shrimp, peeled",
+      "1/2 lb mussels, cleaned",
+      "1/2 lb chicken thighs, chopped",
+      "1/2 cup diced tomatoes",
+      "1 red bell pepper, sliced",
+      "1 teaspoon smoked paprika",
+      "Pinch of saffron",
+      "2 tablespoons olive oil",
+      "1/2 cup peas",
+      "Lemon wedges"
+    ],
+    "instructions": "Heat olive oil in a paella pan, cook chicken until browned. Add bell pepper and tomatoes, cook 3 minutes. Stir in rice, paprika, and saffron. Pour in broth, bring to a boil, then reduce heat. Arrange shrimp and mussels on top. Cook without stirring for 20 minutes until rice absorbs liquid. Add peas in last 5 minutes. Let rest 5 minutes before serving with lemon.",
+    "cooktime_minutes": 45,
+    "nutrition": {
+      "calories": 490,
+      "protein": 32,
+      "carbohydrates": 55,
+      "fat": 14,
+      "fiber": 4,
+      "sodium": 920
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 12,
+    "name": "French Onion Soup",
+    "cuisine": "French",
+    "ingredients": [
+      "4 large onions, thinly sliced",
+      "3 tablespoons butter",
+      "1 tablespoon olive oil",
+      "1 teaspoon sugar",
+      "4 cups beef broth",
+      "1/2 cup dry white wine",
+      "1 teaspoon fresh thyme",
+      "1 bay leaf",
+      "4 slices French baguette",
+      "1 1/2 cups grated Gruyère cheese"
+    ],
+    "instructions": "Melt butter with olive oil, add onions and sugar. Caramelize over medium-low heat for 30-40 minutes, stirring occasionally. Add wine and cook 2 minutes. Add broth, thyme, and bay leaf; simmer 20 minutes. Ladle into oven-safe bowls, top with baguette slices and Gruyère. Broil until cheese is bubbly and golden.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 320,
+      "protein": 14,
+      "carbohydrates": 28,
+      "fat": 18,
+      "fiber": 3,
+      "sodium": 880
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 13,
+    "name": "Korean Bibimbap",
+    "cuisine": "Korean",
+    "ingredients": [
+      "2 cups cooked white rice",
+      "1/2 lb beef bulgogi, sliced",
+      "2 carrots, julienned",
+      "1 zucchini, julienned",
+      "1 cup spinach, blanched",
+      "1 cup bean sprouts, blanched",
+      "2 fried eggs",
+      "3 tablespoons gochujang paste",
+      "1 tablespoon sesame oil",
+      "Sesame seeds for garnish"
+    ],
+    "instructions": "Sauté each vegetable separately with a little sesame oil. Cook beef bulgogi in a hot pan. Arrange rice in bowls, top with beef and vegetables in sections. Place a fried egg on top. Serve with gochujang paste and a drizzle of sesame oil. Mix everything together before eating.",
+    "cooktime_minutes": 35,
+    "nutrition": {
+      "calories": 550,
+      "protein": 30,
+      "carbohydrates": 62,
+      "fat": 18,
+      "fiber": 6,
+      "sodium": 820
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 14,
+    "name": "Vietnamese Pho",
+    "cuisine": "Vietnamese",
+    "ingredients": [
+      "8 cups beef broth",
+      "1 onion, halved and charred",
+      "3-inch ginger, sliced and charred",
+      "2 star anise",
+      "1 cinnamon stick",
+      "1 lb beef sirloin, thinly sliced",
+      "8 oz rice noodles",
+      "1 cup bean sprouts",
+      "Fresh Thai basil",
+      "Fresh cilantro",
+      "Lime wedges",
+      "Hoisin sauce"
+    ],
+    "instructions": "Simmer broth with charred onion, ginger, star anise, and cinnamon for 30 minutes. Strain and return to pot. Cook rice noodles according to package directions. Place noodles in bowls, top with raw beef slices. Pour boiling broth over beef to cook it. Serve with bean sprouts, herbs, lime, and hoisin sauce on the side.",
+    "cooktime_minutes": 45,
+    "nutrition": {
+      "calories": 350,
+      "protein": 28,
+      "carbohydrates": 38,
+      "fat": 8,
+      "fiber": 3,
+      "sodium": 950
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 15,
+    "name": "Butter Chicken",
+    "cuisine": "Indian",
+    "ingredients": [
+      "1 lb chicken thighs, cubed",
+      "1/2 cup yogurt",
+      "1 tablespoon ginger-garlic paste",
+      "2 tablespoons butter",
+      "1 onion, diced",
+      "1 cup tomato puree",
+      "1 teaspoon garam masala",
+      "1 teaspoon chili powder",
+      "1/2 cup heavy cream",
+      "1 tablespoon dried fenugreek leaves",
+      "Naan bread for serving"
+    ],
+    "instructions": "Marinate chicken in yogurt and ginger-garlic paste for 1 hour. Grill chicken pieces until charred. Melt butter, sauté onion until soft. Add tomato puree, garam masala, and chili powder; simmer 15 minutes. Stir in cream and fenugreek leaves. Add grilled chicken and simmer 10 more minutes. Serve with warm naan bread.",
+    "cooktime_minutes": 45,
+    "nutrition": {
+      "calories": 430,
+      "protein": 28,
+      "carbohydrates": 18,
+      "fat": 26,
+      "fiber": 3,
+      "sodium": 650
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 16,
+    "name": "Caesar Salad",
+    "cuisine": "Italian",
+    "ingredients": [
+      "1 head romaine lettuce, chopped",
+      "1/2 cup Caesar dressing",
+      "1/2 cup croutons",
+      "1/4 cup grated Parmesan cheese",
+      "1 anchovy fillet, minced",
+      "1 clove garlic, minced",
+      "1 teaspoon Dijon mustard",
+      "1 tablespoon lemon juice"
+    ],
+    "instructions": "Whisk together garlic, anchovy, mustard, lemon juice, and Caesar dressing. Toss lettuce with dressing until evenly coated. Top with croutons and Parmesan cheese. Serve immediately as a side or add grilled chicken for a main course.",
+    "cooktime_minutes": 15,
+    "nutrition": {
+      "calories": 220,
+      "protein": 8,
+      "carbohydrates": 14,
+      "fat": 16,
+      "fiber": 4,
+      "sodium": 580
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 17,
+    "name": "Fish and Chips",
+    "cuisine": "British",
+    "ingredients": [
+      "4 cod fillets",
+      "1 cup all-purpose flour",
+      "1 teaspoon baking powder",
+      "1 cup cold beer",
+      "1 egg",
+      "4 large potatoes, cut into wedges",
+      "Vegetable oil for frying",
+      "Salt to taste",
+      "Malt vinegar",
+      "Tartar sauce"
+    ],
+    "instructions": "Cut potatoes into thick wedges and fry at 325°F for 5 minutes, drain, then fry again at 375°F until golden. Mix flour, baking powder, beer, and egg into a batter. Dip cod fillets in batter and deep fry at 375°F for 7 minutes until golden and crispy. Season with salt. Serve with malt vinegar and tartar sauce.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 580,
+      "protein": 32,
+      "carbohydrates": 55,
+      "fat": 24,
+      "fiber": 4,
+      "sodium": 680
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 18,
+    "name": "Shakshuka",
+    "cuisine": "Middle Eastern",
+    "ingredients": [
+      "2 tablespoons olive oil",
+      "1 onion, diced",
+      "1 red bell pepper, diced",
+      "3 cloves garlic, minced",
+      "1 teaspoon cumin",
+      "1 teaspoon paprika",
+      "1 can crushed tomatoes",
+      "4-6 eggs",
+      "Fresh parsley",
+      "Crusty bread for serving"
+    ],
+    "instructions": "Heat olive oil, sauté onion and bell pepper until soft. Add garlic, cumin, and paprika; cook 1 minute. Add tomatoes, simmer 10 minutes until thickened. Make wells in the sauce and crack eggs into them. Cover and cook until eggs are set, about 5-7 minutes. Garnish with parsley. Serve with crusty bread.",
+    "cooktime_minutes": 25,
+    "nutrition": {
+      "calories": 280,
+      "protein": 16,
+      "carbohydrates": 20,
+      "fat": 16,
+      "fiber": 5,
+      "sodium": 520
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 19,
+    "name": "Lamb Gyros",
+    "cuisine": "Greek",
+    "ingredients": [
+      "1 lb ground lamb",
+      "1/2 onion, grated",
+      "3 cloves garlic, minced",
+      "1 tablespoon oregano",
+      "1 teaspoon rosemary",
+      "1 teaspoon cumin",
+      "4 pita breads",
+      "1 cup tzatziki sauce",
+      "1 tomato, sliced",
+      "1/2 red onion, sliced",
+      "Lettuce"
+    ],
+    "instructions": "Mix lamb with grated onion, garlic, oregano, rosemary, and cumin. Form into a loaf shape and bake at 350°F for 30 minutes. Let rest, then slice thinly. Warm pita breads, fill with lamb slices, tzatziki, tomato, red onion, and lettuce. Fold and serve immediately.",
+    "cooktime_minutes": 55,
+    "nutrition": {
+      "calories": 480,
+      "protein": 28,
+      "carbohydrates": 38,
+      "fat": 22,
+      "fiber": 3,
+      "sodium": 720
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 20,
+    "name": "Caprese Salad",
+    "cuisine": "Italian",
+    "ingredients": [
+      "2 large ripe tomatoes, sliced",
+      "8 oz fresh mozzarella, sliced",
+      "Fresh basil leaves",
+      "3 tablespoons extra virgin olive oil",
+      "Balsamic glaze for drizzling",
+      "Sea salt",
+      "Freshly ground black pepper"
+    ],
+    "instructions": "Arrange alternating slices of tomato and mozzarella on a plate. Tuck basil leaves between the slices. Drizzle with olive oil and balsamic glaze. Season with sea salt and black pepper. Serve at room temperature as an appetizer.",
+    "cooktime_minutes": 10,
+    "nutrition": {
+      "calories": 260,
+      "protein": 14,
+      "carbohydrates": 6,
+      "fat": 20,
+      "fiber": 2,
+      "sodium": 380
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 21,
+    "name": "Thai Green Curry",
+    "cuisine": "Thai",
+    "ingredients": [
+      "1 lb chicken breast, sliced",
+      "2 tablespoons green curry paste",
+      "1 can coconut milk",
+      "1 cup bamboo shoots",
+      "1 cup Thai basil leaves",
+      "1 red bell pepper, sliced",
+      "2 tablespoons fish sauce",
+      "1 tablespoon brown sugar",
+      "Jasmine rice for serving"
+    ],
+    "instructions": "Heat a little coconut milk in a wok, stir in green curry paste and cook 2 minutes. Add remaining coconut milk, bring to simmer. Add chicken, bamboo shoots, and bell pepper; cook 10 minutes. Season with fish sauce and brown sugar. Stir in Thai basil. Serve over jasmine rice.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 420,
+      "protein": 28,
+      "carbohydrates": 18,
+      "fat": 26,
+      "fiber": 4,
+      "sodium": 780
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 22,
+    "name": "Enchiladas Rojas",
+    "cuisine": "Mexican",
+    "ingredients": [
+      "8 corn tortillas",
+      "2 cups shredded chicken",
+      "2 cups red enchilada sauce",
+      "1 cup shredded cheddar cheese",
+      "1/2 cup sour cream",
+      "1/4 cup diced onion",
+      "Fresh cilantro",
+      "Pickled jalapeños"
+    ],
+    "instructions": "Warm tortillas to make them pliable. Mix chicken with half the enchilada sauce and onion. Fill each tortilla with chicken mixture, roll up, and place seam-side down in a baking dish. Pour remaining sauce over top, sprinkle with cheese. Bake at 375°F for 20 minutes. Top with sour cream, cilantro, and jalapeños.",
+    "cooktime_minutes": 35,
+    "nutrition": {
+      "calories": 390,
+      "protein": 26,
+      "carbohydrates": 32,
+      "fat": 18,
+      "fiber": 4,
+      "sodium": 850
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 23,
+    "name": "Tom Yum Soup",
+    "cuisine": "Thai",
+    "ingredients": [
+      "4 cups chicken broth",
+      "8 oz shrimp, peeled",
+      "2 stalks lemongrass, bruised",
+      "3 slices galangal",
+      "3 kaffir lime leaves",
+      "2 Thai bird chilies, crushed",
+      "1 cup mushrooms, sliced",
+      "2 tablespoons fish sauce",
+      "2 tablespoons lime juice",
+      "Fresh cilantro"
+    ],
+    "instructions": "Bring broth to a boil with lemongrass, galangal, lime leaves, and chilies. Simmer 5 minutes. Add mushrooms and cook 3 minutes. Add shrimp and cook until pink. Remove from heat, stir in fish sauce and lime juice. Garnish with cilantro. Serve hot.",
+    "cooktime_minutes": 20,
+    "nutrition": {
+      "calories": 150,
+      "protein": 18,
+      "carbohydrates": 8,
+      "fat": 4,
+      "fiber": 1,
+      "sodium": 920
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 24,
+    "name": "Banana Pancakes",
+    "cuisine": "American",
+    "ingredients": [
+      "1 ripe banana, mashed",
+      "1 cup all-purpose flour",
+      "1 tablespoon sugar",
+      "1 teaspoon baking powder",
+      "1/2 teaspoon baking soda",
+      "1 egg",
+      "3/4 cup milk",
+      "1 tablespoon melted butter",
+      "Maple syrup for serving",
+      "Sliced bananas for topping"
+    ],
+    "instructions": "Mix flour, sugar, baking powder, and baking soda. In a separate bowl, whisk mashed banana, egg, milk, and melted butter. Combine wet and dry ingredients until just mixed. Pour batter onto a hot greased griddle. Cook until bubbles form, then flip. Serve with maple syrup and fresh banana slices.",
+    "cooktime_minutes": 20,
+    "nutrition": {
+      "calories": 280,
+      "protein": 8,
+      "carbohydrates": 48,
+      "fat": 7,
+      "fiber": 3,
+      "sodium": 320
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 25,
+    "name": "Sushi Rolls (Maki)",
+    "cuisine": "Japanese",
+    "ingredients": [
+      "2 cups sushi rice, cooked",
+      "4 sheets nori seaweed",
+      "1/2 cucumber, julienned",
+      "1 avocado, sliced",
+      "4 oz fresh salmon, sliced",
+      "2 tablespoons rice vinegar",
+      "1 tablespoon sugar",
+      "Soy sauce for dipping",
+      "Pickled ginger",
+      "Wasabi"
+    ],
+    "instructions": "Season warm rice with rice vinegar and sugar. Place nori sheet on a bamboo mat, spread thin layer of rice leaving a 1-inch border. Arrange cucumber, avocado, and salmon in a line. Roll tightly using the mat. Seal edge with a little water. Slice into 8 pieces. Serve with soy sauce, ginger, and wasabi.",
+    "cooktime_minutes": 40,
+    "nutrition": {
+      "calories": 340,
+      "protein": 14,
+      "carbohydrates": 52,
+      "fat": 8,
+      "fiber": 4,
+      "sodium": 380
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 26,
+    "name": "Beef Bourguignon",
+    "cuisine": "French",
+    "ingredients": [
+      "2 lbs beef chuck, cubed",
+      "4 slices bacon, diced",
+      "2 carrots, sliced",
+      "1 onion, diced",
+      "3 cloves garlic, minced",
+      "2 cups red Burgundy wine",
+      "1 cup beef broth",
+      "1 tablespoon tomato paste",
+      "1 bouquet garni (thyme, bay leaf, parsley)",
+      "1 cup pearl onions",
+      "1 cup mushrooms, quartered",
+      "2 tablespoons butter"
+    ],
+    "instructions": "Cook bacon until crispy, set aside. Brown beef in bacon fat in batches, set aside. Sauté carrots and onion, add garlic. Return beef and bacon to pot. Add wine, broth, tomato paste, and bouquet garni. Cover and simmer 2 hours. Sauté pearl onions and mushrooms in butter, add to stew. Cook 30 more minutes. Serve over mashed potatoes.",
+    "cooktime_minutes": 180,
+    "nutrition": {
+      "calories": 520,
+      "protein": 38,
+      "carbohydrates": 18,
+      "fat": 24,
+      "fiber": 4,
+      "sodium": 680
+    },
+    "serving_size": 6
+  },
+  {
+    "id": 27,
+    "name": "Hummus",
+    "cuisine": "Middle Eastern",
+    "ingredients": [
+      "2 cans chickpeas, drained and rinsed",
+      "1/4 cup tahini",
+      "2 cloves garlic",
+      "3 tablespoons lemon juice",
+      "2 tablespoons olive oil",
+      "1/2 teaspoon cumin",
+      "Salt to taste",
+      "Paprika for garnish",
+      "Pita bread for serving"
+    ],
+    "instructions": "Blend chickpeas, tahini, garlic, lemon juice, olive oil, cumin, and salt in a food processor until smooth. Add a little cold water if needed for creaminess. Transfer to a plate, create a well in the center. Drizzle with olive oil and sprinkle paprika. Serve with warm pita bread.",
+    "cooktime_minutes": 10,
+    "nutrition": {
+      "calories": 190,
+      "protein": 8,
+      "carbohydrates": 20,
+      "fat": 10,
+      "fiber": 6,
+      "sodium": 320
+    },
+    "serving_size": 6
+  },
+  {
+    "id": 28,
+    "name": "Chicken Fajitas",
+    "cuisine": "Mexican",
+    "ingredients": [
+      "1 lb chicken breast, sliced",
+      "2 bell peppers, sliced",
+      "1 onion, sliced",
+      "2 tablespoons lime juice",
+      "1 teaspoon chili powder",
+      "1 teaspoon cumin",
+      "1/2 teaspoon garlic powder",
+      "8 flour tortillas",
+      "Sour cream",
+      "Guacamole",
+      "Salsa"
+    ],
+    "instructions": "Toss chicken with lime juice, chili powder, cumin, and garlic powder. Cook chicken in a hot skillet until done. Remove, add peppers and onion to skillet, cook until charred. Return chicken, toss together. Warm tortillas, fill with chicken mixture. Serve with sour cream, guacamole, and salsa.",
+    "cooktime_minutes": 25,
+    "nutrition": {
+      "calories": 420,
+      "protein": 30,
+      "carbohydrates": 38,
+      "fat": 14,
+      "fiber": 5,
+      "sodium": 650
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 29,
+    "name": "Ramen",
+    "cuisine": "Japanese",
+    "ingredients": [
+      "4 cups pork broth",
+      "2 packs fresh ramen noodles",
+      "2 soft-boiled eggs, halved",
+      "4 slices chashu pork",
+      "1 cup corn kernels",
+      "2 green onions, sliced",
+      "1 sheet nori",
+      "1 tablespoon miso paste",
+      "1 teaspoon sesame oil",
+      "Chili oil to taste"
+    ],
+    "instructions": "Simmer pork broth with miso paste and sesame oil. Cook ramen noodles according to package directions, drain. Divide noodles between two bowls. Ladle hot broth over noodles. Arrange chashu pork slices, halved eggs, corn, and nori on top. Garnish with green onions and drizzle with chili oil.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 480,
+      "protein": 24,
+      "carbohydrates": 52,
+      "fat": 20,
+      "fiber": 3,
+      "sodium": 1200
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 30,
+    "name": "Falafel Wrap",
+    "cuisine": "Middle Eastern",
+    "ingredients": [
+      "2 cups dried chickpeas, soaked overnight",
+      "1/2 onion, chopped",
+      "3 cloves garlic",
+      "1 cup fresh parsley",
+      "1 teaspoon cumin",
+      "1 teaspoon coriander",
+      "1 teaspoon salt",
+      "Vegetable oil for frying",
+      "4 pita breads",
+      "Tahini sauce",
+      "Pickled turnips",
+      "Chopped tomatoes"
+    ],
+    "instructions": "Drain chickpeas and blend with onion, garlic, parsley, cumin, coriander, and salt. Form into small patties. Deep fry at 350°F until golden brown, about 4 minutes. Warm pita breads, fill with falafel, tahini sauce, pickled turnips, and tomatoes. Wrap tightly and serve.",
+    "cooktime_minutes": 45,
+    "nutrition": {
+      "calories": 420,
+      "protein": 16,
+      "carbohydrates": 52,
+      "fat": 18,
+      "fiber": 10,
+      "sodium": 780
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 31,
+    "name": "Chicken Adobo",
+    "cuisine": "Filipino",
+    "ingredients": [
+      "2 lbs chicken thighs",
+      "1/2 cup soy sauce",
+      "1/2 cup white vinegar",
+      "6 cloves garlic, crushed",
+      "3 bay leaves",
+      "1 teaspoon black peppercorns",
+      "1 tablespoon brown sugar",
+      "1/2 cup water",
+      "Steamed rice for serving"
+    ],
+    "instructions": "Combine soy sauce, vinegar, garlic, bay leaves, peppercorns, and sugar. Marinate chicken for 30 minutes. Transfer everything to a pot, add water, bring to a boil. Reduce heat, simmer 30 minutes. Remove chicken, reduce sauce until thick. Return chicken to coat. Serve over steamed rice.",
+    "cooktime_minutes": 45,
+    "nutrition": {
+      "calories": 380,
+      "protein": 32,
+      "carbohydrates": 10,
+      "fat": 20,
+      "fiber": 1,
+      "sodium": 1100
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 32,
+    "name": "Bruschetta",
+    "cuisine": "Italian",
+    "ingredients": [
+      "4 ripe tomatoes, diced",
+      "1/4 cup fresh basil, chopped",
+      "3 cloves garlic, minced",
+      "3 tablespoons extra virgin olive oil",
+      "1 tablespoon balsamic vinegar",
+      "Salt and pepper to taste",
+      "1 French baguette, sliced",
+      "Balsamic glaze for drizzling"
+    ],
+    "instructions": "Mix tomatoes, basil, garlic, olive oil, and balsamic vinegar. Season with salt and pepper. Let sit 15 minutes to meld flavors. Toast baguette slices until golden. Rub each slice with a cut garlic clove. Top with tomato mixture and drizzle balsamic glaze. Serve immediately.",
+    "cooktime_minutes": 20,
+    "nutrition": {
+      "calories": 180,
+      "protein": 4,
+      "carbohydrates": 24,
+      "fat": 8,
+      "fiber": 3,
+      "sodium": 280
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 33,
+    "name": "Chicken Katsu Curry",
+    "cuisine": "Japanese",
+    "ingredients": [
+      "2 chicken breasts, butterflied",
+      "1 cup panko breadcrumbs",
+      "2 eggs, beaten",
+      "1/2 cup flour",
+      "Vegetable oil for frying",
+      "1 onion, sliced",
+      "1 carrot, diced",
+      "2 potatoes, cubed",
+      "3 tablespoons curry roux",
+      "2 cups water",
+      "Steamed rice"
+    ],
+    "instructions": "Coat chicken in flour, egg, then panko. Deep fry at 350°F until golden, about 6 minutes. Sauté onion, carrot, and potatoes. Add water, simmer until vegetables are tender. Stir in curry roux until thickened. Slice crispy chicken, serve over rice with curry sauce on the side.",
+    "cooktime_minutes": 40,
+    "nutrition": {
+      "calories": 580,
+      "protein": 32,
+      "carbohydrates": 62,
+      "fat": 20,
+      "fiber": 5,
+      "sodium": 780
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 34,
+    "name": "Pasta Carbonara",
+    "cuisine": "Italian",
+    "ingredients": [
+      "1 lb spaghetti",
+      "4 oz pancetta, diced",
+      "3 egg yolks",
+      "1 whole egg",
+      "1 cup grated Pecorino Romano",
+      "1 cup grated Parmesan",
+      "Freshly ground black pepper",
+      "Salt for pasta water"
+    ],
+    "instructions": "Cook spaghetti in salted water until al dente. Render pancetta until crispy. Whisk egg yolks, whole egg, Pecorino, and Parmesan together with black pepper. Drain pasta, reserving pasta water. Off heat, toss hot pasta with pancetta and its fat. Quickly stir in egg and cheese mixture, adding pasta water as needed for creaminess. Serve immediately.",
+    "cooktime_minutes": 25,
+    "nutrition": {
+      "calories": 520,
+      "protein": 24,
+      "carbohydrates": 56,
+      "fat": 22,
+      "fiber": 2,
+      "sodium": 720
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 35,
+    "name": "Chicken Shawarma",
+    "cuisine": "Middle Eastern",
+    "ingredients": [
+      "1 lb chicken thighs, sliced",
+      "1/4 cup yogurt",
+      "2 tablespoons lemon juice",
+      "3 cloves garlic, minced",
+      "1 teaspoon cumin",
+      "1 teaspoon turmeric",
+      "1 teaspoon paprika",
+      "4 pita breads",
+      "Tahini sauce",
+      "Pickles",
+      "Chopped parsley"
+    ],
+    "instructions": "Mix yogurt, lemon juice, garlic, cumin, turmeric, and paprika for marinade. Marinate chicken for at least 2 hours. Cook in a hot skillet over high heat until charred and cooked through. Warm pita breads, fill with chicken, tahini sauce, pickles, and parsley. Roll up and serve.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 400,
+      "protein": 30,
+      "carbohydrates": 36,
+      "fat": 14,
+      "fiber": 2,
+      "sodium": 680
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 36,
+    "name": "Guacamole",
+    "cuisine": "Mexican",
+    "ingredients": [
+      "3 ripe avocados",
+      "1/4 cup diced red onion",
+      "1 small tomato, diced",
+      "1 jalapeño, minced",
+      "1/4 cup fresh cilantro, chopped",
+      "2 tablespoons lime juice",
+      "1 clove garlic, minced",
+      "Salt to taste",
+      "Tortilla chips for serving"
+    ],
+    "instructions": "Halve and pit avocados, scoop into a bowl. Mash to desired consistency. Fold in onion, tomato, jalapeño, cilantro, lime juice, and garlic. Season with salt. Serve immediately with tortilla chips.",
+    "cooktime_minutes": 10,
+    "nutrition": {
+      "calories": 160,
+      "protein": 2,
+      "carbohydrates": 10,
+      "fat": 14,
+      "fiber": 7,
+      "sodium": 150
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 37,
+    "name": "Shepherd's Pie",
+    "cuisine": "British",
+    "ingredients": [
+      "1 lb ground lamb",
+      "1 onion, diced",
+      "2 carrots, diced",
+      "1 cup peas",
+      "2 tablespoons tomato paste",
+      "1 cup beef broth",
+      "1 tablespoon Worcestershire sauce",
+      "2 lbs potatoes, peeled and cubed",
+      "4 tablespoons butter",
+      "1/4 cup milk",
+      "Salt and pepper"
+    ],
+    "instructions": "Boil potatoes until tender, mash with butter and milk. Sauté onion and carrots, add lamb and cook until browned. Stir in tomato paste, broth, Worcestershire sauce, and peas. Simmer 10 minutes. Pour meat mixture into baking dish, spread mashed potatoes on top. Bake at 400°F for 20 minutes until golden.",
+    "cooktime_minutes": 60,
+    "nutrition": {
+      "calories": 480,
+      "protein": 26,
+      "carbohydrates": 42,
+      "fat": 22,
+      "fiber": 6,
+      "sodium": 650
+    },
+    "serving_size": 6
+  },
+  {
+    "id": 38,
+    "name": "Tomato Basil Soup",
+    "cuisine": "American",
+    "ingredients": [
+      "2 cans whole peeled tomatoes",
+      "1 onion, diced",
+      "4 cloves garlic, minced",
+      "2 cups vegetable broth",
+      "1/2 cup fresh basil leaves",
+      "2 tablespoons olive oil",
+      "1/4 cup heavy cream",
+      "Salt and pepper",
+      "Grilled cheese for dipping"
+    ],
+    "instructions": "Sauté onion and garlic in olive oil until soft. Add tomatoes and broth, simmer 20 minutes. Add basil leaves, blend until smooth with an immersion blender. Stir in heavy cream. Season with salt and pepper. Serve with grilled cheese sandwiches.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 190,
+      "protein": 4,
+      "carbohydrates": 18,
+      "fat": 12,
+      "fiber": 4,
+      "sodium": 580
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 39,
+    "name": "Chicken Satay",
+    "cuisine": "Thai",
+    "ingredients": [
+      "1 lb chicken breast, cut into strips",
+      "1/4 cup coconut milk",
+      "2 tablespoons soy sauce",
+      "1 tablespoon curry powder",
+      "1 teaspoon turmeric",
+      "1 tablespoon brown sugar",
+      "Bamboo skewers, soaked",
+      "1/2 cup peanut butter",
+      "1 tablespoon red curry paste",
+      "1/4 cup coconut milk (for sauce)"
+    ],
+    "instructions": "Mix coconut milk, soy sauce, curry powder, turmeric, and sugar for marinade. Marinate chicken 1 hour. Thread onto skewers. Grill or broil 3 minutes per side. For sauce: simmer peanut butter, red curry paste, and coconut milk until smooth. Serve skewers with peanut sauce.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 380,
+      "protein": 32,
+      "carbohydrates": 12,
+      "fat": 22,
+      "fiber": 2,
+      "sodium": 720
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 40,
+    "name": "Ratatouille",
+    "cuisine": "French",
+    "ingredients": [
+      "1 eggplant, cubed",
+      "2 zucchini, sliced",
+      "2 bell peppers, diced",
+      "4 tomatoes, chopped",
+      "1 onion, diced",
+      "3 cloves garlic, minced",
+      "3 tablespoons olive oil",
+      "1 teaspoon herbes de Provence",
+      "Fresh basil",
+      "Salt and pepper"
+    ],
+    "instructions": "Sauté eggplant in olive oil until lightly browned, set aside. Cook zucchini and peppers until tender, set aside. Sauté onion and garlic, add tomatoes and herbes de Provence, simmer 15 minutes. Combine all vegetables, season with salt and pepper. Bake at 375°F for 30 minutes. Garnish with fresh basil.",
+    "cooktime_minutes": 60,
+    "nutrition": {
+      "calories": 180,
+      "protein": 4,
+      "carbohydrates": 22,
+      "fat": 10,
+      "fiber": 8,
+      "sodium": 220
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 41,
+    "name": "Ceviche",
+    "cuisine": "Peruvian",
+    "ingredients": [
+      "1 lb fresh white fish, cubed",
+      "1/2 cup fresh lime juice",
+      "1/4 cup lemon juice",
+      "1 red onion, thinly sliced",
+      "1 jalapeño, minced",
+      "1 tomato, diced",
+      "1/4 cup cilantro, chopped",
+      "1 sweet potato, boiled and sliced",
+      "Corn nuts (cancha)",
+      "Salt to taste"
+    ],
+    "instructions": "Marinate fish in lime and lemon juice for 20-30 minutes until opaque. Drain most of the liquid. Toss fish with red onion, jalapeño, tomato, and cilantro. Season with salt. Serve with sliced sweet potato and corn nuts on the side.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 220,
+      "protein": 28,
+      "carbohydrates": 18,
+      "fat": 3,
+      "fiber": 3,
+      "sodium": 280
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 42,
+    "name": "Palak Paneer",
+    "cuisine": "Indian",
+    "ingredients": [
+      "1 lb fresh spinach",
+      "8 oz paneer cheese, cubed",
+      "1 onion, diced",
+      "2 cloves garlic, minced",
+      "1-inch ginger, grated",
+      "1 green chili",
+      "1 teaspoon cumin seeds",
+      "1/2 teaspoon garam masala",
+      "1/4 cup heavy cream",
+      "2 tablespoons ghee",
+      "Naan bread"
+    ],
+    "instructions": "Blanch spinach, then blend into a smooth puree. Pan-fry paneer cubes in ghee until golden, set aside. Sauté onion, garlic, ginger, and chili. Add cumin seeds and garam masala. Stir in spinach puree and cream, simmer 10 minutes. Add paneer cubes and cook 5 more minutes. Serve with naan.",
+    "cooktime_minutes": 35,
+    "nutrition": {
+      "calories": 340,
+      "protein": 18,
+      "carbohydrates": 14,
+      "fat": 24,
+      "fiber": 5,
+      "sodium": 420
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 43,
+    "name": "Lobster Bisque",
+    "cuisine": "French",
+    "ingredients": [
+      "2 lobster tails",
+      "3 tablespoons butter",
+      "1 onion, diced",
+      "1 carrot, diced",
+      "2 tablespoons tomato paste",
+      "1/4 cup brandy",
+      "2 cups fish stock",
+      "1 cup heavy cream",
+      "1 bay leaf",
+      "Fresh tarragon",
+      "Salt and white pepper"
+    ],
+    "instructions": "Steam lobster tails, remove meat and chop; reserve shells. Sauté shells in butter with onion and carrot. Add tomato paste, cook 2 minutes. Add brandy and flame. Add stock and bay leaf, simmer 30 minutes. Strain, return liquid to pot. Stir in cream and lobster meat, heat through. Garnish with tarragon.",
+    "cooktime_minutes": 60,
+    "nutrition": {
+      "calories": 380,
+      "protein": 22,
+      "carbohydrates": 12,
+      "fat": 24,
+      "fiber": 2,
+      "sodium": 680
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 44,
+    "name": "Chicken Quesadillas",
+    "cuisine": "Mexican",
+    "ingredients": [
+      "2 cups shredded cooked chicken",
+      "4 large flour tortillas",
+      "2 cups shredded Mexican cheese blend",
+      "1/2 cup diced bell peppers",
+      "1/4 cup diced onion",
+      "1 jalapeño, sliced",
+      "Sour cream",
+      "Salsa",
+      "Guacamole"
+    ],
+    "instructions": "Place tortilla in a dry skillet, sprinkle half with cheese. Top with chicken, peppers, onion, and jalapeño. Add more cheese, fold tortilla over. Cook until golden on both sides and cheese melts. Cut into wedges, serve with sour cream, salsa, and guacamole.",
+    "cooktime_minutes": 15,
+    "nutrition": {
+      "calories": 440,
+      "protein": 30,
+      "carbohydrates": 32,
+      "fat": 22,
+      "fiber": 3,
+      "sodium": 820
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 45,
+    "name": "Tiramisu",
+    "cuisine": "Italian",
+    "ingredients": [
+      "6 egg yolks",
+      "3/4 cup sugar",
+      "1 1/4 cups mascarpone cheese",
+      "2 cups heavy cream",
+      "2 cups strong espresso, cooled",
+      "3 tablespoons coffee liqueur",
+      "24 ladyfinger biscuits",
+      "Cocoa powder for dusting",
+      "Dark chocolate shavings"
+    ],
+    "instructions": "Whisk egg yolks with sugar until thick and pale. Fold in mascarpone. Whip heavy cream to stiff peaks and fold in. Mix espresso with coffee liqueur. Quickly dip ladyfingers in espresso, layer in dish. Spread half the cream mixture, repeat layers. Refrigerate 6 hours. Dust with cocoa powder and chocolate shavings before serving.",
+    "cooktime_minutes": 360,
+    "nutrition": {
+      "calories": 420,
+      "protein": 8,
+      "carbohydrates": 38,
+      "fat": 26,
+      "fiber": 1,
+      "sodium": 120
+    },
+    "serving_size": 8
+  },
+  {
+    "id": 46,
+    "name": "Jambalaya",
+    "cuisine": "American (Creole)",
+    "ingredients": [
+      "1 lb andouille sausage, sliced",
+      "1 lb chicken thighs, chopped",
+      "1/2 lb shrimp, peeled",
+      "1 onion, diced",
+      "1 green bell pepper, diced",
+      "2 celery stalks, diced",
+      "3 cloves garlic, minced",
+      "1 can crushed tomatoes",
+      "2 cups long-grain rice",
+      "3 cups chicken broth",
+      "2 tablespoons Cajun seasoning",
+      "Green onions for garnish"
+    ],
+    "instructions": "Brown sausage and chicken in a large pot, set aside. Sauté onion, bell pepper, celery, and garlic. Add tomatoes, Cajun seasoning, and rice; stir well. Return meat to pot, add broth. Bring to boil, reduce heat, cover and simmer 25 minutes. Add shrimp in last 5 minutes. Garnish with green onions.",
+    "cooktime_minutes": 45,
+    "nutrition": {
+      "calories": 550,
+      "protein": 36,
+      "carbohydrates": 52,
+      "fat": 20,
+      "fiber": 4,
+      "sodium": 1050
+    },
+    "serving_size": 6
+  },
+  {
+    "id": 47,
+    "name": "Baklava",
+    "cuisine": "Middle Eastern",
+    "ingredients": [
+      "1 package phyllo dough, thawed",
+      "2 cups mixed nuts (walnuts, pistachios), finely chopped",
+      "1 teaspoon cinnamon",
+      "1 cup butter, melted",
+      "1 cup honey",
+      "1/2 cup sugar",
+      "1/2 cup water",
+      "1 tablespoon lemon juice",
+      "1 teaspoon vanilla extract"
+    ],
+    "instructions": "Mix nuts with cinnamon. Layer 8 sheets of phyllo, brushing each with butter. Sprinkle nut mixture. Repeat layers, ending with phyllo. Cut into diamond shapes. Bake at 350°F for 40 minutes until golden. Meanwhile, simmer honey, sugar, water, and lemon juice for 10 minutes. Stir in vanilla. Pour syrup over hot baklava. Cool completely.",
+    "cooktime_minutes": 60,
+    "nutrition": {
+      "calories": 320,
+      "protein": 5,
+      "carbohydrates": 38,
+      "fat": 18,
+      "fiber": 2,
+      "sodium": 130
+    },
+    "serving_size": 12
+  },
+  {
+    "id": 48,
+    "name": "Coconut Shrimp",
+    "cuisine": "Asian",
+    "ingredients": [
+      "1 lb large shrimp, peeled and deveined",
+      "1/2 cup flour",
+      "2 eggs, beaten",
+      "1 cup shredded coconut",
+      "1/2 cup panko breadcrumbs",
+      "Vegetable oil for frying",
+      "1/2 cup sweet chili sauce",
+      "Lime wedges"
+    ],
+    "instructions": "Set up breading station: flour, beaten eggs, and coconut mixed with panko. Dredge shrimp in flour, dip in egg, coat with coconut mixture. Heat oil to 350°F, fry shrimp 2-3 minutes until golden. Drain on paper towels. Serve with sweet chili sauce and lime wedges.",
+    "cooktime_minutes": 20,
+    "nutrition": {
+      "calories": 340,
+      "protein": 22,
+      "carbohydrates": 28,
+      "fat": 16,
+      "fiber": 3,
+      "sodium": 580
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 49,
+    "name": "Vegetable Stir-Fry with Tofu",
+    "cuisine": "Chinese",
+    "ingredients": [
+      "1 block firm tofu, cubed",
+      "2 cups mixed vegetables (snap peas, carrots, bell peppers)",
+      "2 cloves garlic, minced",
+      "1 tablespoon ginger, grated",
+      "3 tablespoons soy sauce",
+      "1 tablespoon hoisin sauce",
+      "1 teaspoon sesame oil",
+      "1 tablespoon vegetable oil",
+      "1 tablespoon cornstarch mixed with 2 tbsp water",
+      "Steamed rice"
+    ],
+    "instructions": "Press tofu, then pan-fry until golden on all sides. Set aside. Heat oil in wok, stir-fry garlic and ginger for 30 seconds. Add vegetables and cook 4 minutes. Return tofu to wok. Add soy sauce, hoisin sauce, and sesame oil. Stir in cornstarch slurry to thicken. Serve over steamed rice.",
+    "cooktime_minutes": 25,
+    "nutrition": {
+      "calories": 310,
+      "protein": 18,
+      "carbohydrates": 36,
+      "fat": 12,
+      "fiber": 6,
+      "sodium": 820
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 50,
+    "name": "New York Cheesecake",
+    "cuisine": "American",
+    "ingredients": [
+      "1 1/2 cups graham cracker crumbs",
+      "1/4 cup sugar",
+      "1/2 cup butter, melted",
+      "4 packages cream cheese, softened",
+      "1 cup sugar",
+      "4 large eggs",
+      "1 cup sour cream",
+      "2 teaspoons vanilla extract",
+      "1 tablespoon lemon zest"
+    ],
+    "instructions": "Mix graham crumbs, 1/4 cup sugar, and melted butter. Press into springform pan. Beat cream cheese and 1 cup sugar until smooth. Add eggs one at a time. Mix in sour cream, vanilla, and lemon zest. Pour over crust. Bake at 325°F for 55-60 minutes. Cool in oven with door cracked. Refrigerate 4 hours before serving.",
+    "cooktime_minutes": 120,
+    "nutrition": {
+      "calories": 380,
+      "protein": 8,
+      "carbohydrates": 32,
+      "fat": 26,
+      "fiber": 0,
+      "sodium": 320
+    },
+    "serving_size": 12
+  },
+  {
+    "id": 51,
+    "name": "Biryani",
+    "cuisine": "Indian",
+    "ingredients": [
+      "2 cups basmati rice",
+      "1 lb chicken thighs",
+      "1 cup yogurt",
+      "2 onions, thinly sliced and fried",
+      "2 tomatoes, chopped",
+      "2 tablespoons biryani masala",
+      "1 teaspoon saffron soaked in 2 tbsp milk",
+      "4 tablespoons ghee",
+      "Fresh mint leaves",
+      "Fresh cilantro",
+      "Whole spices (cardamom, cloves, cinnamon)"
+    ],
+    "instructions": "Marinate chicken in yogurt and biryani masala for 2 hours. Parboil rice with whole spices until 70% cooked. Layer chicken at the bottom of a pot, add tomatoes, herbs, and fried onions. Top with rice, drizzle saffron milk and ghee. Seal with lid and cook on low heat for 30 minutes. Mix gently before serving.",
+    "cooktime_minutes": 90,
+    "nutrition": {
+      "calories": 520,
+      "protein": 28,
+      "carbohydrates": 55,
+      "fat": 20,
+      "fiber": 3,
+      "sodium": 680
+    },
+    "serving_size": 6
+  },
+  {
+    "id": 52,
+    "name": "Gazpacho",
+    "cuisine": "Spanish",
+    "ingredients": [
+      "6 ripe tomatoes, peeled",
+      "1 cucumber, peeled and chopped",
+      "1 green bell pepper, chopped",
+      "1 clove garlic",
+      "2 tablespoons red wine vinegar",
+      "3 tablespoons olive oil",
+      "1 cup cold water",
+      "Salt to taste",
+      "Croutons for garnish",
+      "Diced cucumber for garnish"
+    ],
+    "instructions": "Blend tomatoes, cucumber, bell pepper, garlic, vinegar, and olive oil until smooth. Add cold water to desired consistency. Season with salt. Chill for at least 2 hours. Serve cold, garnished with croutons and diced cucumber.",
+    "cooktime_minutes": 150,
+    "nutrition": {
+      "calories": 120,
+      "protein": 3,
+      "carbohydrates": 14,
+      "fat": 7,
+      "fiber": 4,
+      "sodium": 280
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 53,
+    "name": "Teriyaki Salmon",
+    "cuisine": "Japanese",
+    "ingredients": [
+      "4 salmon fillets",
+      "1/4 cup soy sauce",
+      "2 tablespoons mirin",
+      "2 tablespoons sake",
+      "1 tablespoon brown sugar",
+      "1 teaspoon ginger, grated",
+      "1 tablespoon vegetable oil",
+      "Sesame seeds",
+      "Green onions, sliced",
+      "Steamed rice"
+    ],
+    "instructions": "Mix soy sauce, mirin, sake, sugar, and ginger for teriyaki sauce. Heat oil in a skillet, cook salmon skin-side down for 4 minutes. Flip, pour teriyaki sauce over. Cook until sauce thickens and glazes the salmon. Sprinkle with sesame seeds and green onions. Serve with steamed rice.",
+    "cooktime_minutes": 20,
+    "nutrition": {
+      "calories": 360,
+      "protein": 34,
+      "carbohydrates": 10,
+      "fat": 18,
+      "fiber": 0,
+      "sodium": 720
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 54,
+    "name": "Chickpea Curry (Chana Masala)",
+    "cuisine": "Indian",
+    "ingredients": [
+      "2 cans chickpeas, drained",
+      "1 onion, diced",
+      "2 tomatoes, pureed",
+      "3 cloves garlic, minced",
+      "1-inch ginger, grated",
+      "1 teaspoon cumin seeds",
+      "1 teaspoon coriander powder",
+      "1 teaspoon garam masala",
+      "1/2 teaspoon turmeric",
+      "2 tablespoons vegetable oil",
+      "Fresh cilantro",
+      "Naan or rice"
+    ],
+    "instructions": "Heat oil, add cumin seeds until they sizzle. Sauté onion, garlic, and ginger until golden. Add tomato puree and spices; cook until oil separates. Add chickpeas and a splash of water, simmer 15 minutes. Mash some chickpeas to thicken. Garnish with cilantro. Serve with naan or rice.",
+    "cooktime_minutes": 30,
+    "nutrition": {
+      "calories": 280,
+      "protein": 12,
+      "carbohydrates": 38,
+      "fat": 10,
+      "fiber": 10,
+      "sodium": 480
+    },
+    "serving_size": 4
+  },
+  {
+    "id": 55,
+    "name": "Apple Crisp",
+    "cuisine": "American",
+    "ingredients": [
+      "6 apples, peeled and sliced",
+      "1/2 cup sugar",
+      "1 teaspoon cinnamon",
+      "1/4 teaspoon nutmeg",
+      "1 cup rolled oats",
+      "1/2 cup flour",
+      "1/2 cup brown sugar",
+      "1/2 cup cold butter, cubed",
+      "Vanilla ice cream for serving"
+    ],
+    "instructions": "Toss apples with sugar, cinnamon, and nutmeg. Place in a baking dish. Mix oats, flour, and brown sugar. Cut in cold butter until crumbly. Sprinkle topping over apples. Bake at 375°F for 35-40 minutes until bubbly and golden. Serve warm with vanilla ice cream.",
+    "cooktime_minutes": 50,
+    "nutrition": {
+      "calories": 320,
+      "protein": 3,
+      "carbohydrates": 56,
+      "fat": 12,
+      "fiber": 5,
+      "sodium": 80
+    },
+    "serving_size": 6
+  }
+]

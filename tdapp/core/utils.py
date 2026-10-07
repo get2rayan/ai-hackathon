@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 
-class Utilities():
+class Utils():
 
     def __init__(self) -> None:
         pass
@@ -110,9 +110,9 @@ class Utilities():
 
 
 if __name__ == "__main__":
-    ## validate get_meijer_products method
-    val = Utilities().get_store_products(21, ['produce','meat'])
+    ## validate get_store_products method
+    val = Utils().get_store_products(21, ['produce','meat'])
     print(val)
-    val2 = Utilities().get_store_products(202)
+    val2 = Utils().get_store_products(202)
     print(val2)
     ##

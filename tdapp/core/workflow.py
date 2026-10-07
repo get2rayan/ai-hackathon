@@ -3,7 +3,7 @@ import json
 from langgraph.graph import START, StateGraph, END
 
 from tdapp.core.recipe_handler import RecipeHandler
-from tdapp.core.user_params import UserIntent
+from tdapp.core.state import UserIntent
 
 try:
     from .prompt_handler import PromptHandler
@@ -33,15 +33,26 @@ def get_recipe_items(state: WorkflowState) -> dict:
     return state
 
 
+def get_recipes(state: WorkflowState) -> dict:
+    # Placeholder for generating recipes based on recipe items
+    recipes = RecipeHandler().get_recipes(json.loads(state['recipe_items']))
+
+    state['recipes'] = recipes
+    print(f"State after generating recipes: {state}")
+    return state
+
+
 def create_workflow_graph():
     graph_builder = StateGraph(WorkflowState)
 
     graph_builder.add_node("get_user_intent", get_user_intent)
     graph_builder.add_node("get_recipe_items", get_recipe_items)
+    graph_builder.add_node("get_recipes", get_recipes)
 
     graph_builder.add_edge(START, "get_user_intent")
     graph_builder.add_edge("get_user_intent", "get_recipe_items")
-    graph_builder.add_edge("get_recipe_items", END)
+    graph_builder.add_edge("get_recipe_items", "get_recipes")
+    graph_builder.add_edge("get_recipes", END)
     
     graph = graph_builder.compile()
 

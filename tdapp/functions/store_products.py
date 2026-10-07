@@ -3,12 +3,12 @@ import sys
 from pathlib import Path
 
 try:
-    from ..core.utilities import Utilities
+    from ..core.utils import Utils
 except ImportError:
     repo_root = Path(__file__).resolve().parents[2]
     if str(repo_root) not in sys.path:
         sys.path.insert(0, str(repo_root))
-    from tdapp.core.utilities import Utilities
+    from tdapp.core.utils import Utils
 
 class store_products:
 
@@ -38,7 +38,7 @@ class store_products:
             print(f"store_id: {store_id}, user_ingredients: {user_ingredients}, category: {category}")   
             # Todo: logic to read store specific produce items under promo / excess / frequently sold
             # pdt_file="meijer_products.csv"
-            mjr_pdts = Utilities().get_store_products(store_id, category)
+            mjr_pdts = Utils().get_store_products(store_id, category)
             
             if user_ingredients:
                 # remove duplicates if present in user cart as well as meijer products
