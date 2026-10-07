@@ -1,7 +1,9 @@
-
-import sys
+from agents import Agent, AgentOutputSchema, Runner, function_tool
+import sys, os, dotenv
+dotenv.load_dotenv(override=True)
 from pathlib import Path
-from tdapp.core.user_params import UserIntent
+from tdapp.core.state import RecipeContext, UserIntent
+from tdapp.core.rag_handler import RAGHandler
 try:
     from .state import WorkflowState
 except ImportError:
@@ -15,10 +17,10 @@ except ImportError:
     from tdapp.functions.store_products import store_products
 
 
-import json
-
 class RecipeHandler:
     def __init__(self) -> None:
+        self.model = os.getenv("DEPLOYMENT_NAME")
+        self.rag_handler = RAGHandler()
         pass
 
     @property
@@ -60,6 +62,20 @@ class RecipeHandler:
             ]
         )
 
+    
+    def retrieve_recipe_context(self, query: str)->dict:
+        """Retrieve relevant recipe context based on the user's query.
+
+        Args:
+            query (str): The user's query for recipe context.
+
+        Returns:
+            dict: Retrieved context from the RAG handler.
+        """
+        print(f"TOOL CALL: Retrieving recipe context for query: {query}")
+        return self.rag_handler.retrieve_context(query)
+    
+
     def get_recipe_items(self, user_intent: UserIntent)->list:
             # get user input from the workflow state
             if user_intent:
@@ -80,89 +96,67 @@ class RecipeHandler:
             return items_list
 
 
-    def get_custom_recipes(self, item_message ) -> str :
+    async def get_custom_recipes(self, state: WorkflowState ) -> dict :
+            # Todo: 
+            # Extract user intent from the workflow state
+            # pass the user intent to LLM to pull relevant recipes prioritized by recipe name, cuisine, ingredients
+            # Parallelly, fetch relevant recipe from the web
+            # Pass the combined recipe data to the next step in the workflow for evaluation
             # return item_message
-            recipe_ingredients =None
-            user_data = UserIntent.model_validate_json(item_message.content)
-            print(f"user_data: {user_data}")
             
-            # check if the model wanted to call a function
-            if dict(item_message).get('tool_calls'):
-                available_functions = {
-                    "get_items_list": store_products().get_items_list
-                }
-                
-                # extracting the functions
-                for tool_call in item_message.tool_calls:
-                    function_to_call = available_functions[tool_call.function.name]
-                    function_args = json.loads(tool_call.function.arguments)
-                    function_resp = function_to_call(**function_args)
+            
+            system_instruction = "You are a helpful assistant that can suggest a best recipe as per user request."
 
-                    print(f"function_args : {function_args} \n store_id :{user_data.store_id}  - category: {user_data.category} - user_ingredients: {user_data.user_ingredients} - recipe_name: {user_data.recipe_name} - serving_size: {user_data.serving_size}")
-                    recipe_ingredients=function_resp    
+            user_intent = state.get('user_intent')
+            
+            if(user_intent):
+                recipe_name = user_intent.get('recipe_name')
+                serving_size = user_intent.get('serving_size')
+                cuisine = user_intent.get('cuisine')
             else:
-                recipe_ingredients=store_products().get_items_list()
+                recipe_name = None
+                serving_size = None
+                cuisine = None
 
-            print(f"recipe_ingredients : {recipe_ingredients}")
-
-            messages=[
-                        { "role": "system", "content": "You are an AI assistant that can suggest one recipe based on either the ingredients specified by the user and / or recipe name and / or serving size. Return recipe name, ingredients and instructions of the recipe in a json format. The ingredients that the user has should be under 'used_ingredients' and the ingredients that the user doesn't have should be under 'needed_ingredients'. Here is the example of your response format: {\"recipe\": "", \"user_ingredients\": "", \"needed_ingredients\", \"instructions\": ""}"}
-                        ,{ "role": "user", "content": "How do I make moroccan meatballs when I have meatballs and oil"}
-                        ,{ "role": "assistant", "content": "{\"recipe\": \"AlFez Moroccan Meatballs\",\"user_ingredients\": [\"Meatballs\",\"oil\"],\"needed_ingredients\": [\"AlFez  Moroccan Meatball Sauce\",\"Fresh coriander\",\"Cooked rice or couscous\"],\"instructions\":[\"1.\tIn a heated pan (or in the oven), brown the meatballs in oil, about 5 min.\"\r\n\"2.\tAdd the Al’FezTM Moroccan Meatball Sauce and simmer until the meatballs are cooked, about 20 min.\"\r\n\"3.\tServe over a be of rice or couscous. Garnish with fresh coriander.\"]}"}
-                        ,{ "role": "user", "content": "How do I make make a meatball recipe for 4 people"}
-                        ,{ "role": "assistant", "content": "{\"recipe\": \"AlFez Moroccan Meatballs\",\"needed_ingredients\": [\"12 Meatballs\",\"1 Tbsp Olive oil\",\"1 Jar AlFez  Moroccan Meatball Sauce\",\"Fresh coriander (for garnish)\",\"5 cups Cooked rice or couscous\"],\"instructions\":[\"1.\tIn a heated pan (or in the oven), brown the meatballs in oil, about 5 min.\"\r\n\"2.\tAdd the Al’FezTM Moroccan Meatball Sauce and simmer until the meatballs are cooked, about 20 min.\"\r\n\"3.\tServe over a be of rice or couscous. Garnish with fresh coriander.\"]}"}
-                    ]
-
-            recipe_name = user_data.recipe_name
-            serving_size = user_data.serving_size
+            recipe_ingredients = state.get('recipe_items')
 
             print(f"recipe_name : {recipe_name} - serving_size: {serving_size} - recipe_ingredients: {recipe_ingredients}")
             if(recipe_name and serving_size and recipe_ingredients):
-                user_intent = f"How do I make {recipe_name} for {serving_size} people when I have {recipe_ingredients}"
+                user_prompt_message = f"How do I make {recipe_name} for {serving_size} people when I have {recipe_ingredients}"
             elif (recipe_name and serving_size):
-                user_intent = f"How do I make {recipe_name} for {serving_size} people"
+                user_prompt_message = f"How do I make {recipe_name} for {serving_size} people"
             elif (recipe_name and recipe_ingredients):
-                user_intent = f"How do I make {recipe_name} and I have {recipe_ingredients}"        
+                user_prompt_message = f"How do I make {recipe_name} when I have {recipe_ingredients}"        
             elif (serving_size and recipe_ingredients):
-                user_intent = f"Please suggest a recipe that I can make using {recipe_ingredients} and I need to prepare meal for {serving_size} people"
+                user_prompt_message = f"Suggest a recipe that I can make using {recipe_ingredients} and I need to prepare meal for {serving_size} people"
             elif (recipe_name):
-                user_intent = f"How do I make {recipe_name}"
+                user_prompt_message = f"How do I make {recipe_name}"
             elif (serving_size):
-                user_intent = f"How do I make a meal for {serving_size} people"
+                user_prompt_message = f"How do I make a meal for {serving_size} people"
             else:
-                user_intent=f"Suggest a recipe that I can make using most of the following ingredients: {recipe_ingredients}"
+                user_prompt_message=f"Suggest a recipe that can be made using the following ingredients: {recipe_ingredients}"
 
-            print (f"User intent : {user_intent}")
-            user_prompt_message = { "role": "user", "content": user_intent }
-            messages.append(user_prompt_message)
+            print (f"User prompt message : {user_prompt_message}")
+            
 
-            recipe_response = self.client1.chat.completions.create(
-                model=self.deploymentid,
-                messages=messages,
-                # past_messages=10,        
-                # temperature=0.5,
-                # extra_body={
-                #     "data_sources": [
-                #         {
-                #             "type": "azure_search",
-                #             "parameters": {
-                #                 "endpoint": os.environ["SEARCH_ENDPOINT"],
-                #                 "index_name": os.environ["SEARCH_INDEX_NAME"],
-                #                 "semantic_configuration": "azureml_default",
-                #                 "authentication": {
-                #                     "type": "api_key",
-                #                     "key": os.environ["SEARCH_API_KEY"]
-                #                 }                            
-                #             }
-                #         }
-                #     ]
-                # }
+            recipe_agent = Agent(
+                name="recipe_agent",
+                instructions=system_instruction,
+                model=self.model,
+                tools=[function_tool(self.retrieve_recipe_context)],
+                output_type=AgentOutputSchema(
+                    RecipeContext, 
+                    strict_json_schema=True
+                )
             )
 
-            # print(f"recipe response is {recipe_response}")
-            recipe_message = recipe_response.choices[0].message
-            print(recipe_message)
-            return recipe_message.content
+            recipe_response = await Runner.run(
+                starting_agent=recipe_agent, 
+                input=user_prompt_message
+            )
+                        
+            return recipe_response.final_output
+    
 
 
 if __name__ == "__main__":
@@ -175,5 +169,16 @@ if __name__ == "__main__":
         "serving_size":None,
         "category":["produce","meat"]
     }
-    recipe_items = recipe_handler.get_recipe_items(user_intent)
-    print(recipe_items)
+    state: WorkflowState = {
+        "user_intent": user_intent,
+        "recipe_items": recipe_handler.get_recipe_items(user_intent),
+    }
+    # recipe_items = recipe_handler.get_recipe_items(user_intent)
+    print(f"recipe_items: {state.get('recipe_items')}")
+
+    import asyncio
+    print(f"\nrecipe result: \n{asyncio.run(recipe_handler.get_custom_recipes(state))}")
+
+
+
+    # state: WorkflowState = {'user_intent': {'store_id': 21, 'cuisine': 'Mediterranean', 'user_ingredients': ['tomatoes', 'ground beef', 'onions'], 'recipe_name': None, 'serving_size': None, 'category': ['produce', 'meat']}, 'recipe_items':['tomatoes', 'ground beef', 'onions', 'mango', 'apple', 'chicken', 'shrimp', 'avocado', 'fish', 'beef']}

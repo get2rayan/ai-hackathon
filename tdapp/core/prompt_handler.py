@@ -16,24 +16,8 @@ class PromptHandler():
 
     def __init__(self) -> None:
 
-        self.client1 = OpenAI()
-        self.deploymentid = os.environ.get("DEPLOYMENT_NAME")
-        
-        # use_azure_active_directory = False  # Set this flag to True if you are using Azure Active Directory
-
-        # if not use_azure_active_directory:
-        #     self.endpoint = os.environ["AZURE_OPENAI_ENDPOINT"]
-        #     self.api_key = os.environ["AZURE_OPENAI_API_KEY"]
-        #     # set the deployment model we want to use
-        #     self.deploymentid =os.environ["DEPLOYMENT_NAME"]            
-        
-        # # Generic AI client to extract information from user prompt
-        # self.client1 = OpenAI(
-        #     base_url=self.endpoint,
-        #     api_key=self.api_key,
-        # )
-
-        # print(f"Azure OpenAI client initialized with endpoint: {self.endpoint} and deployment: {self.deploymentid}")
+        self.aiclient = OpenAI()
+        self.model = os.environ.get("DEPLOYMENT_NAME")
 
         # # # AI extension client to work with custom Meijer data
         # # self.client2 = openai.AzureOpenAI(
@@ -42,7 +26,7 @@ class PromptHandler():
         # #     api_version="2024-08-01-preview"
         # # )
 
-    def extractUserIntent(self, userPrompt:str) -> str:
+    def extractUserIntent(self, userPrompt:str) -> dict:
         print(f"User prompt received: {userPrompt}")
 
         # Below user prompt can signify 
@@ -59,8 +43,8 @@ class PromptHandler():
         messages = system_message + user_prompt_message
             
         try: 
-            item_response = self.client1.chat.completions.create(
-                model=self.deploymentid,
+            item_response = self.aiclient.chat.completions.create(
+                model=self.model,
                 messages=messages,
                 response_format={
                     "type": "json_schema",
@@ -75,7 +59,7 @@ class PromptHandler():
             )
             
             item_message = item_response.choices[0].message.content
-            return item_message
+            return json.loads(item_message)
         
             # if item_message.tool_calls is not None:
             #     return item_message.tool_calls[0].function.arguments

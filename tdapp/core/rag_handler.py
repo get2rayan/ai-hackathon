@@ -23,12 +23,15 @@ class RAGHandler:
         docs:list[Document] = self.JsonLoader.get_json_data_as_semantic_text_document()
         return docs
     
-    def retrieve(self, query: str) -> dict:
+    def retrieve_context(self, query: str) -> list:
         if self.db is None:
             print("FAISS index is not loaded.")
-            return {}
-        docs = self.db.similarity_search(query)
-        return {"retrieved_data": [doc.page_content for doc in docs]}    
+            return []
+        docs = self.db.similarity_search(query, k=3)
+        print(f"\nRAG retrieved_data: \n{[doc.page_content for doc in docs]}")
+        return [doc.page_content for doc in docs]
+        # return {"retrieved_data": [doc.page_content for doc in docs]}
+            
 
     def save_vector_index(self):
         json_chunks = self.get_json_data_chunks()
@@ -56,16 +59,17 @@ class RAGHandler:
 if __name__ == "__main__":
     rag_handler = RAGHandler()
     # Example usage of the retrieve method
-    query = "I want to prepare an indian dish made of rice and chicken"
-    result = rag_handler.retrieve(query)
+    # query = "I want to prepare an indian dish made of rice and chicken"
+    query = "Suggest a recipe that can be made using the following ingredients: ['tomatoes', 'ground beef', 'onions', 'mango', 'apple', 'chicken', 'shrimp', 'avocado', 'fish', 'beef']"
+    result = rag_handler.retrieve_context(query)
     print(result)
 
-    # similarity search with score
-    docs_with_score = rag_handler.db.similarity_search_with_score(
-        query,
-        k=3,
-        score_threshold=1.0
-    )
-    print(f"\nTop {len(docs_with_score)} relevant documents for query '{query}':")
-    for i,(doc, score) in enumerate(docs_with_score, start=1):
-        print(f"\nDocument {i} - Score: {score:.4f} \nContent preview: {doc.page_content[:200]}")
+    # # similarity search with score
+    # docs_with_score = rag_handler.db.similarity_search_with_score(
+    #     query,
+    #     k=3,
+    #     score_threshold=1.0
+    # )
+    # print(f"\nTop {len(docs_with_score)} relevant documents for query '{query}':")
+    # for i,(doc, score) in enumerate(docs_with_score, start=1):
+    #     print(f"\nDocument {i} - Score: {score:.4f} \nContent preview: {doc.page_content[:200]}")

@@ -90,7 +90,8 @@ class Utils():
                         query += " WHERE " + " AND ".join(conditions)
                     
                     # promote isinpromotion items
-                    query += " ORDER BY isinpromotion DESC"
+                    query += " ORDER BY isinpromotion DESC LIMIT %s"
+                    query_params.append(self.sample_count)
 
                     print(f"Executing query: {query} with params: {query_params}")
 

@@ -31,23 +31,29 @@ class EvaluatorOutput(TypedDict):
     success_criteria_met: bool=Field(description="Indicates whether the generated recipe content meets the success criteria")
     overall_score: float=Field(description="Overall score for the generated recipe content based on evaluation metrics")
 
+class NutritionInfo(BaseModel):
+    calories: Optional[float] = Field(..., description="Calories in the recipe")
+    protein: Optional[float] = Field(..., description="Protein content in the recipe")
+    fat: Optional[float] = Field(..., description="Fat content in the recipe")
+    fiber: Optional[float] = Field(..., description="Fiber content in the recipe")
+    carbohydrates: Optional[float] = Field(..., description="Carbohydrate content in the recipe")
 
-class Recipe(TypedDict):
-    name: str=Field(description="Name of the recipe")
-    cuisine: str=Field(description="Cuisine type of the recipe")
-    ingredients: List[str]=Field(description="List of ingredients required for the recipe")
-    instructions: str=Field(description="Instructions to prepare the recipe")
-    nutrition: Optional[Dict[str, float]]=Field(description="Nutritional information for the recipe, e.g., calories, protein, fat")
-    prep_time: int=Field(description="Preparation time for the recipe in minutes")
-    category: RecipeCategory=Field(description="Category of the recipe, either 'store' or 'web'")
+class Recipe(BaseModel):
+    name: str=Field(..., description="Name of the recipe")
+    cuisine: str=Field(..., description="Cuisine type of the recipe")
+    ingredients: List[str]=Field(..., description="List of ingredients required for the recipe")
+    instructions: str=Field(..., description="Instructions to prepare the recipe")
+    nutrition: Optional[NutritionInfo]=Field(..., description="Nutritional information for the recipe, e.g., calories, protein, fat")
+    prep_time: int=Field(..., description="Preparation time for the recipe in minutes")
+    category: RecipeCategory=Field(..., description="Category of the recipe, if a tool is used, it would be 'tool', otherwise 'web'")
 
 
 class Context(TypedDict):
     retrieved_data: Dict[str, str]=Field(description="Data retrieved from the RAG handler based on the user query")
 
 
-class RecipeContext(TypedDict):
-    context: Context=Field(description="Contextual information retrieved from the RAG handler")
+class RecipeContext(BaseModel):
+    # context: Context=Field(description="Contextual information retrieved from the RAG handler")
     recipes: List[Recipe]=Field(description="List of recipes generated based on the context")
 
 
@@ -56,6 +62,3 @@ class WorkflowState(TypedDict):
     recipe_items: List[str]=Field(description="List of recipe items generated based on user intent and shrinkage adjustments")
     recipe_context: RecipeContext=Field(description="Contextual information and store recipes related to the current workflow")
     evaluator_output: EvaluatorOutput=Field(description="Output from the evaluator including feedback and scores")
-
-
-
