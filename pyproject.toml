@@ -10,6 +10,7 @@ dependencies = [
     "langchain-community>=0.4.2",
     "langchain-openai>=1.6.7",
     "langgraph>=1.2.11",
+    "mlflow>=3.17.0",
     "mysql-connector-python>=26.7.0",
     "openai>=3.13.0",
     "openai-agents>=0.23.1",

@@ -60,7 +60,7 @@ if __name__ == "__main__":
     rag_handler = RAGHandler()
     # Example usage of the retrieve method
     # query = "I want to prepare an indian dish made of rice and chicken"
-    query = "Suggest a recipe that can be made using the following ingredients: ['tomatoes', 'ground beef', 'onions', 'mango', 'apple', 'chicken', 'shrimp', 'avocado', 'fish', 'beef']"
+    query = "I want to make biryani and I have 'chicken', 'rice', 'mango', 'apple', 'shrimp', 'avocado'"
     result = rag_handler.retrieve_context(query)
     print(result)
 

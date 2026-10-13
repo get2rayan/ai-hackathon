@@ -1,8 +1,9 @@
-from agents import Agent, AgentOutputSchema, Runner, function_tool
+from agents import Agent, AgentOutputSchema, Runner, function_tool, trace
 import sys, os, dotenv
+import mlflow
 dotenv.load_dotenv(override=True)
 from pathlib import Path
-from tdapp.core.state import RecipeContext, UserIntent
+from tdapp.core.state import RecipeContext, UserRecipeIntent
 from tdapp.core.rag_handler import RAGHandler
 try:
     from .state import WorkflowState
@@ -17,50 +18,16 @@ except ImportError:
     from tdapp.functions.store_products import store_products
 
 
+# ── 1. MLflow setup ───────────────────────────────────────────
+mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_experiment("ai-hackathon")
+mlflow.openai.autolog()
+
 class RecipeHandler:
     def __init__(self) -> None:
         self.model = os.getenv("DEPLOYMENT_NAME")
         self.rag_handler = RAGHandler()
         pass
-
-    @property
-    def tools(self):
-        return (
-            [
-                {
-                    "type": "function",
-                    "function":
-                    {
-                        "name": "get_items_list",
-                        "description": "Get items from the store based on user input for item category",
-                        "parameters": {
-                            "type":"object",
-                            "properties": {
-                                "store_id": {
-                                    "type": "integer",
-                                    "description": "store id of Meijer store",
-                                },
-                                "user_ingredients": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    },
-                                    "description":"list of user ingredients."                                
-                                },
-                                "category":{
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    },
-                                    "description":"category of the items to fetch from the store."
-                                }
-                            },
-                            "required": [],
-                        }
-                    }
-                }
-            ]
-        )
 
     
     def retrieve_recipe_context(self, query: str)->dict:
@@ -76,7 +43,7 @@ class RecipeHandler:
         return self.rag_handler.retrieve_context(query)
     
 
-    def get_recipe_items(self, user_intent: UserIntent)->list:
+    def get_recipe_items(self, user_intent: UserRecipeIntent)->list:
             # get user input from the workflow state
             if user_intent:
                 store_id = user_intent.get('store_id')
@@ -96,49 +63,65 @@ class RecipeHandler:
             return items_list
 
 
-    async def get_custom_recipes(self, state: WorkflowState ) -> dict :
-            # Todo: 
-            # Extract user intent from the workflow state
-            # pass the user intent to LLM to pull relevant recipes prioritized by recipe name, cuisine, ingredients
-            # Parallelly, fetch relevant recipe from the web
-            # Pass the combined recipe data to the next step in the workflow for evaluation
-            # return item_message
-            
-            
-            system_instruction = "You are a helpful assistant that can suggest a best recipe as per user request."
+    async def get_custom_recipes(self, state: WorkflowState ) -> RecipeContext :
+        """Generate custom recipes based on the current workflow state.
 
-            user_intent = state.get('user_intent')
-            
-            if(user_intent):
-                recipe_name = user_intent.get('recipe_name')
-                serving_size = user_intent.get('serving_size')
-                cuisine = user_intent.get('cuisine')
-            else:
-                recipe_name = None
-                serving_size = None
-                cuisine = None
+        Args:
+            state (WorkflowState): The current state of the workflow containing user intent and recipe items.
 
-            recipe_ingredients = state.get('recipe_items')
+        Returns:
+            RecipeContext: Generated to be added to the workflow state.
+        """
+        # Todo: 
+        # Extract user intent from the workflow state
+        # pass the user intent to LLM to pull relevant recipes prioritized by recipe name, cuisine, ingredients
+        # Parallelly, fetch relevant recipe from the web
+        # Pass the combined recipe data to the next step in the workflow for evaluation
+        # return item_message
+        
+        
+        system_instruction = "You are a helpful recipe assistant. Before generating a recipe, \
+            you must call retrieve_recipe_context by passing the input query. Base your \
+            recipe generation on the retrieved context."
 
-            print(f"recipe_name : {recipe_name} - serving_size: {serving_size} - recipe_ingredients: {recipe_ingredients}")
-            if(recipe_name and serving_size and recipe_ingredients):
-                user_prompt_message = f"How do I make {recipe_name} for {serving_size} people when I have {recipe_ingredients}"
-            elif (recipe_name and serving_size):
-                user_prompt_message = f"How do I make {recipe_name} for {serving_size} people"
-            elif (recipe_name and recipe_ingredients):
-                user_prompt_message = f"How do I make {recipe_name} when I have {recipe_ingredients}"        
-            elif (serving_size and recipe_ingredients):
-                user_prompt_message = f"Suggest a recipe that I can make using {recipe_ingredients} and I need to prepare meal for {serving_size} people"
-            elif (recipe_name):
-                user_prompt_message = f"How do I make {recipe_name}"
-            elif (serving_size):
-                user_prompt_message = f"How do I make a meal for {serving_size} people"
-            else:
-                user_prompt_message=f"Suggest a recipe that can be made using the following ingredients: {recipe_ingredients}"
+        user_intent = state.get('user_intent')
+        
+        if(user_intent):
+            recipe_name = user_intent.get('recipe_name')
+            serving_size = user_intent.get('serving_size')
+            cuisine = user_intent.get('cuisine')
+        else:
+            recipe_name = None
+            serving_size = None
+            cuisine = None
 
-            print (f"User prompt message : {user_prompt_message}")
-            
+        recipe_ingredients = ', '.join(state.get('recipe_items', []))
 
+        print(f"recipe_name : {recipe_name} - serving_size: {serving_size} - recipe_ingredients: {recipe_ingredients}")
+        if(recipe_name and serving_size and recipe_ingredients):
+            user_prompt_message = f"How do I make {recipe_name} for {serving_size} people when I have {recipe_ingredients}"
+        elif (recipe_name and serving_size):
+            user_prompt_message = f"How do I make {recipe_name} for {serving_size} people"
+        elif (recipe_name and recipe_ingredients):
+            user_prompt_message = f"I want to make {recipe_name} and I have {recipe_ingredients}"        
+        elif (serving_size and recipe_ingredients):
+            user_prompt_message = f"Suggest a recipe that I can make using {recipe_ingredients} and I need to prepare meal for {serving_size} people"
+        elif (recipe_name):
+            user_prompt_message = f"How do I make {recipe_name}"
+        elif (serving_size):
+            user_prompt_message = f"How do I make a meal for {serving_size} people"
+        else:
+            user_prompt_message=f"Suggest a recipe that can be made using most of the following ingredients: {recipe_ingredients}"
+
+        print (f"User prompt message : {user_prompt_message}")
+        
+        with mlflow.start_run(run_name="recipe_agent_execution"):
+            mlflow.set_tags({
+                "agent_type": "recipe_agent",
+                "llm_model": self.model,
+                "framework": "openai"
+            })
+        # with trace('recipe_agent_execution'):
             recipe_agent = Agent(
                 name="recipe_agent",
                 instructions=system_instruction,
@@ -154,14 +137,14 @@ class RecipeHandler:
                 starting_agent=recipe_agent, 
                 input=user_prompt_message
             )
-                        
-            return recipe_response.final_output
+                    
+        return recipe_response.final_output
     
 
 
 if __name__ == "__main__":
     recipe_handler = RecipeHandler()
-    user_intent: UserIntent = {
+    user_intent: UserRecipeIntent = {
         "store_id":21,
         "cuisine":"Mediterranean",
         "user_ingredients":["tomatoes","ground beef","onions"],

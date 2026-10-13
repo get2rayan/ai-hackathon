@@ -2,12 +2,13 @@ from typing import List, Dict, TypedDict
 from pydantic import Field
 from typing import List, Literal, Optional
 from pydantic import BaseModel, ConfigDict, Field
+from langgraph.graph import MessagesState
 
 # Define a reusable Literal type for clean code
 StoreCategory = Literal["produce", "dairy", "bakery", "meat", "pantry", "frozen", "seafood"]
-RecipeCategory = Literal['store', 'web']
+RecipeChannel = Literal['store', 'web']
 
-class UserIntent(BaseModel):
+class UserRecipeIntent(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     store_id: Optional[int] = Field(..., description="Id of the grocery store or supermarket.")
@@ -31,12 +32,14 @@ class EvaluatorOutput(TypedDict):
     success_criteria_met: bool=Field(description="Indicates whether the generated recipe content meets the success criteria")
     overall_score: float=Field(description="Overall score for the generated recipe content based on evaluation metrics")
 
+
 class NutritionInfo(BaseModel):
     calories: Optional[float] = Field(..., description="Calories in the recipe")
     protein: Optional[float] = Field(..., description="Protein content in the recipe")
     fat: Optional[float] = Field(..., description="Fat content in the recipe")
     fiber: Optional[float] = Field(..., description="Fiber content in the recipe")
     carbohydrates: Optional[float] = Field(..., description="Carbohydrate content in the recipe")
+
 
 class Recipe(BaseModel):
     name: str=Field(..., description="Name of the recipe")
@@ -45,7 +48,7 @@ class Recipe(BaseModel):
     instructions: str=Field(..., description="Instructions to prepare the recipe")
     nutrition: Optional[NutritionInfo]=Field(..., description="Nutritional information for the recipe, e.g., calories, protein, fat")
     prep_time: int=Field(..., description="Preparation time for the recipe in minutes")
-    category: RecipeCategory=Field(..., description="Category of the recipe, if a tool is used, it would be 'tool', otherwise 'web'")
+    channel: RecipeChannel=Field(..., description="channel source for the recipe, if a tool is used, it would be 'tool', otherwise 'web'")
 
 
 class Context(TypedDict):
@@ -58,7 +61,9 @@ class RecipeContext(BaseModel):
 
 
 class WorkflowState(TypedDict):
-    user_intent: UserIntent=Field(description="The intent of the user based on their input")
+    messages_state: MessagesState=Field(description="List of chat messages exchanged in the workflow")
+    is_recipe_needed: bool=Field(description="Indicates whether the last message from user is related to a recipe")
+    user_intent: UserRecipeIntent=Field(description="The intent of the user based on their input")
     recipe_items: List[str]=Field(description="List of recipe items generated based on user intent and shrinkage adjustments")
     recipe_context: RecipeContext=Field(description="Contextual information and store recipes related to the current workflow")
     evaluator_output: EvaluatorOutput=Field(description="Output from the evaluator including feedback and scores")
