@@ -27,10 +27,12 @@ class RAGHandler:
         if self.db is None:
             print("FAISS index is not loaded.")
             return []
-        docs = self.db.similarity_search(query, k=3)
-        print(f"\nRAG retrieved_data: \n{[doc.page_content for doc in docs]}")
-        return [doc.page_content for doc in docs]
-        # return {"retrieved_data": [doc.page_content for doc in docs]}
+        docs = self.db.similarity_search(query, k=2)
+        # return [{"text": doc.page_content, "metadata": doc.metadata} for doc in docs]
+        retrieved_doc = [{"text": doc.page_content, "metadata": doc.metadata} for doc in docs]
+        print(f"\nRAG retrieved_data: \n{retrieved_doc}")
+        
+        return {"retrieved_data": retrieved_doc[0] if retrieved_doc else None}
             
 
     def save_vector_index(self):

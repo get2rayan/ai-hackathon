@@ -1,7 +1,7 @@
-import json
 from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_openai import OpenAIEmbeddings
 from langgraph.graph import START, MessagesState, StateGraph, END
-
+from langgraph.checkpoint.memory import MemorySaver
 from tdapp.core.recipe_handler import RecipeHandler
 from tdapp.core.state import UserRecipeIntent
 
@@ -10,6 +10,24 @@ try:
 except ImportError:
     from prompt_handler import PromptHandler
 from tdapp.core.state import WorkflowState
+
+from langchain_core.globals import set_llm_cache
+from langchain_redis import RedisSemanticCache
+
+REDIS_URL = "redis://localhost:6379"
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+memory = MemorySaver()
+
+
+# Initialize the Redis semantic cache
+set_llm_cache(
+    RedisSemanticCache(
+        redis_url=REDIS_URL,
+        embeddings = embeddings,
+        distance_threshold = 0.2,
+        ttl=3600
+    )
+)
 
 
 class Workflow():
@@ -85,13 +103,12 @@ class Workflow():
                 "generate_chat_response": 'generate_chat_response'
             }
         )
-        graph_builder.add_edge("extract_user_recipe_intent", END)
         graph_builder.add_edge("generate_chat_response", END)
-        # graph_builder.add_edge("get_user_intent", "get_recipe_items")
-        # graph_builder.add_edge("get_recipe_items", "get_recipes")
-        # graph_builder.add_edge("get_recipes", END)
+        graph_builder.add_edge("extract_user_recipe_intent", "get_recipe_items")
+        graph_builder.add_edge("get_recipe_items", "get_recipes")
+        graph_builder.add_edge("get_recipes", END)
         
-        graph = graph_builder.compile()
+        graph = graph_builder.compile(checkpointer=memory)
 
         #display the graph in mermaid format
         # print(graph.get_graph().draw_mermaid())
@@ -113,26 +130,27 @@ def run_chat_workflow():
         "messages": [HumanMessage(content=default_user_prompt)]
         }
     }
-    result = asyncio.run(chat_workflow.ainvoke(initial_state))
-    print(result)
+    # # result = asyncio.run(chat_workflow.ainvoke(initial_state))
+    # print(result)
 
-    # print("\nRunning chat workflow...\n")
+    print("\nRunning chat workflow...\n")
 
 
-    # while True:
-    #     try:
-    #         user_input = input("You: ").strip()
-    #     except KeyboardInterrupt:
-    #         print("\nExiting chat workflow.")
-    #         break
+    while True:
+        try:
+            user_input = input("\nYou: ").strip()
+        except KeyboardInterrupt:
+            print("\nExiting chat workflow.")
+            break
 
-    #     if not user_input:
-    #         user_input = default_user_prompt
+        if not user_input:
+            user_input = default_user_prompt
         
-    #     initial_state['messages_state']['messages'] = [*history, HumanMessage(content=user_input)]
+        config = {"configurable": {"thread_id": "thread_1"}}
+        initial_state['messages_state']['messages'] = [*history, HumanMessage(content=user_input)]
         
-    #     result = asyncio.run(chat_workflow.ainvoke(initial_state))
-    #     history = result['messages_state']['messages']
+        result = asyncio.run(chat_workflow.ainvoke(initial_state, config=config))
+        history = result['messages_state']['messages']
 
 
 

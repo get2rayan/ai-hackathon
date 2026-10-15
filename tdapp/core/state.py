@@ -49,6 +49,7 @@ class Recipe(BaseModel):
     nutrition: Optional[NutritionInfo]=Field(..., description="Nutritional information for the recipe, e.g., calories, protein, fat")
     prep_time: int=Field(..., description="Preparation time for the recipe in minutes")
     channel: RecipeChannel=Field(..., description="channel source for the recipe, if a tool is used, it would be 'tool', otherwise 'web'")
+    citation: Optional[str]=Field(..., description="Citation for the recipe")
 
 
 class Context(TypedDict):

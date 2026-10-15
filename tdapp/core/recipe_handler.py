@@ -44,11 +44,12 @@ class RecipeHandler:
     
 
     def get_recipe_items(self, user_intent: UserRecipeIntent)->list:
+            print(f"TOOL CALL: Retrieving recipe items for user intent: {user_intent}")
             # get user input from the workflow state
             if user_intent:
-                store_id = user_intent.get('store_id')
-                category = user_intent.get('category')
-                user_ingredients = user_intent.get('user_ingredients')
+                store_id = user_intent.store_id
+                category = user_intent.category
+                user_ingredients = user_intent.user_ingredients
             else:
                 store_id = None
                 category = None
@@ -80,16 +81,17 @@ class RecipeHandler:
         # return item_message
         
         
-        system_instruction = "You are a helpful recipe assistant. Before generating a recipe, \
-            you must call retrieve_recipe_context by passing the input query. Base your \
-            recipe generation on the retrieved context."
+        system_instruction = "You are a helpful recipe assistant. You must call the \
+            tool retrieve_recipe_context by passing the input query. The tool will return data back if it finds \
+            a relevant recipe matching the query. Base your recipe generation on the retrieved context. \
+            Use the provided metadata `id` property as a bracket tag for citation. (e.g. [1] or [2])."
 
-        user_intent = state.get('user_intent')
+        user_intent: UserRecipeIntent = state.get('user_intent')
         
         if(user_intent):
-            recipe_name = user_intent.get('recipe_name')
-            serving_size = user_intent.get('serving_size')
-            cuisine = user_intent.get('cuisine')
+            recipe_name = user_intent.recipe_name
+            serving_size = user_intent.serving_size
+            cuisine = user_intent.cuisine
         else:
             recipe_name = None
             serving_size = None
@@ -140,6 +142,8 @@ class RecipeHandler:
                     
         return recipe_response.final_output
     
+
+
 
 
 if __name__ == "__main__":

@@ -47,9 +47,9 @@ class JSONLoader:
 
     def get_metadata(self, recipe):
         return {
-            # "id": recipe['id'],
+            "id": recipe['id'],
             "name": recipe['name'],
-            "cooktime_minutes": recipe['cooktime_minutes'],
+            "prep_time": recipe['cooktime_minutes'],
             "cuisine": recipe['cuisine'],
             # "instructions": recipe['instructions']
         }
