@@ -21,6 +21,7 @@ except ImportError:
 # ── 1. MLflow setup ───────────────────────────────────────────
 mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("ai-hackathon")
+mlflow.langchain.autolog()
 mlflow.openai.autolog()
 
 class RecipeHandler:
@@ -39,17 +40,26 @@ class RecipeHandler:
         Returns:
             dict: Retrieved context from the RAG handler.
         """
-        print(f"TOOL CALL: Retrieving recipe context for query: {query}")
+        print(f"\nTOOL CALL: Retrieving recipe context for query: {query}")
         return self.rag_handler.retrieve_context(query)
     
 
-    def get_recipe_items(self, user_intent: UserRecipeIntent)->list:
-            print(f"TOOL CALL: Retrieving recipe items for user intent: {user_intent}")
+    def get_promo_items(self, userRecipeIntent: UserRecipeIntent)->list:
+            """
+            Retrieve recipe items based on the user's intent.
+
+            Args:
+                userRecipeIntent (UserRecipeIntent): The user's recipe intent.
+
+            Returns:
+                list: A list of recipe items.
+            """
+            print(f"\nTOOL CALL: Retrieving recipe items for user intent: {userRecipeIntent}")
             # get user input from the workflow state
-            if user_intent:
-                store_id = user_intent.store_id
-                category = user_intent.category
-                user_ingredients = user_intent.user_ingredients
+            if userRecipeIntent:
+                store_id = userRecipeIntent.store_id
+                category = userRecipeIntent.category
+                user_ingredients = userRecipeIntent.user_ingredients
             else:
                 store_id = None
                 category = None
@@ -81,17 +91,17 @@ class RecipeHandler:
         # return item_message
         
         
-        system_instruction = "You are a helpful recipe assistant. You must call the \
-            tool retrieve_recipe_context by passing the input query. The tool will return data back if it finds \
-            a relevant recipe matching the query. Base your recipe generation on the retrieved context. \
-            Use the provided metadata `id` property as a bracket tag for citation. (e.g. [1] or [2])."
+        system_instruction = "You are a helpful recipe assistant. Use the tool retrieve_recipe_context \
+            to get the context of relevant matching recipe. Base your recipe generation only on the retrieved context. \
+            If no relevant recipe is available, return None. If metadata is provided, use the `id` property \
+            as a bracket tag for citation. (e.g. [1] or [2])."
 
-        user_intent: UserRecipeIntent = state.get('user_intent')
+        userRecipeIntent: UserRecipeIntent = state.get('userRecipeIntent')
         
-        if(user_intent):
-            recipe_name = user_intent.recipe_name
-            serving_size = user_intent.serving_size
-            cuisine = user_intent.cuisine
+        if(userRecipeIntent):
+            recipe_name = userRecipeIntent.recipe_name
+            serving_size = userRecipeIntent.serving_size
+            cuisine = userRecipeIntent.cuisine
         else:
             recipe_name = None
             serving_size = None
@@ -99,23 +109,29 @@ class RecipeHandler:
 
         recipe_ingredients = ', '.join(state.get('recipe_items', []))
 
-        print(f"recipe_name : {recipe_name} - serving_size: {serving_size} - recipe_ingredients: {recipe_ingredients}")
+        print(f"\nrecipe_name : {recipe_name} | cuisine: {cuisine} | recipe_ingredients: {recipe_ingredients} | serving_size: {serving_size}")
         if(recipe_name and serving_size and recipe_ingredients):
-            user_prompt_message = f"How do I make {recipe_name} for {serving_size} people when I have {recipe_ingredients}"
+            user_prompt_message = f"User wants to make {recipe_name} for {serving_size} people and they have {recipe_ingredients}"
         elif (recipe_name and serving_size):
-            user_prompt_message = f"How do I make {recipe_name} for {serving_size} people"
+            user_prompt_message = f"User wants to make {recipe_name} for {serving_size} people"
         elif (recipe_name and recipe_ingredients):
-            user_prompt_message = f"I want to make {recipe_name} and I have {recipe_ingredients}"        
+            user_prompt_message = f"User wants to make {recipe_name} and they have {recipe_ingredients}"        
+        elif (cuisine and recipe_ingredients):
+            user_prompt_message = f"User wants to make {cuisine} dish and they have {recipe_ingredients}"
+        elif (cuisine and serving_size):
+            user_prompt_message = f"User wants to make {cuisine} dish for {serving_size} people"
         elif (serving_size and recipe_ingredients):
-            user_prompt_message = f"Suggest a recipe that I can make using {recipe_ingredients} and I need to prepare meal for {serving_size} people"
+            user_prompt_message = f"User has {recipe_ingredients} and they need to prepare a dish for {serving_size} people"
         elif (recipe_name):
-            user_prompt_message = f"How do I make {recipe_name}"
+            user_prompt_message = f"User wants a recipe for {recipe_name}"
         elif (serving_size):
-            user_prompt_message = f"How do I make a meal for {serving_size} people"
-        else:
-            user_prompt_message=f"Suggest a recipe that can be made using most of the following ingredients: {recipe_ingredients}"
+            user_prompt_message = f"User wants a recipe to make a dish for {serving_size} people"
+        elif (cuisine):
+            user_prompt_message = f"User wants a recipe to make {cuisine} dish"
+        elif (recipe_ingredients):
+            user_prompt_message=f"User wants a recipe that can be made using most of the following ingredients: {recipe_ingredients}"
 
-        print (f"User prompt message : {user_prompt_message}")
+        print (f"\nUser prompt message : {user_prompt_message}")
         
         with mlflow.start_run(run_name="recipe_agent_execution"):
             mlflow.set_tags({

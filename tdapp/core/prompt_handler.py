@@ -1,13 +1,11 @@
 import os
-import json
-from langchain_core.messages import AIMessage, HumanMessage
-import logging
-from mlflow import prompt
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langchain_openai import ChatOpenAI
 from openai import OpenAI
 import dotenv
 from tdapp.core.state import UserRecipeIntent, WorkflowState
 from langgraph.graph import MessagesState
-from langchain_core.messages import convert_to_openai_messages
+
 
 # try:
 #     from .state import UserIntent
@@ -21,101 +19,100 @@ class PromptHandler():
 
     def __init__(self) -> None:
 
-        self.aiclient = OpenAI()
-        self.model = os.environ.get("DEPLOYMENT_NAME")
+        self.chatClient = ChatOpenAI(
+            base_url=os.environ.get("OPENROUTER_BASE_URL"),
+            api_key=os.environ.get("OPENROUTER_API_KEY"),
+            model="openai/gpt-6-luna"
+        )
+        self.structuredClient = self.chatClient.with_structured_output(schema=UserRecipeIntent)
+        self.decisionClient = OpenAI()
+        self.deployed_model = os.environ.get("DEPLOYMENT_NAME")
 
-        # # # AI extension client to work with custom Meijer data
-        # # self.client2 = openai.AzureOpenAI(
-        # #     base_url=f"{self.endpoint}/openai/deployments/{self.deploymentid}/extensions",
-        # #     api_key=self.api_key,
-        # #     api_version="2024-08-01-preview"
-        # # )
-
-    def IsRecipeWarranted(self, messages_state: MessagesState) -> bool:
-        user_message = messages_state['messages'][-1].content
+    
+    def IsRecipeWarranted(self, messages: list[BaseMessage]) -> bool:
+        # get last user message
+        user_message = next(
+            msg.content
+            for msg in reversed(messages)
+            if isinstance(msg, HumanMessage)
+        )
         print(f"User prompt received: {user_message}")
 
-        decision = self.aiclient.decisions.create(
-            model=self.model,
+        decision = self.decisionClient.decisions.create(
+            model=self.deployed_model,
             input = user_message,
             questions=[
                 {
                     "type": "predicate",
-                    "instructions": "Is the user looking for a recipe suggestion?"
+                    "instructions": "Is the user looking for a new recipe suggestion?"
                 }
             ]
         )
-        
-        return True if decision.answers[0].probability > 0.5 else False
+        print(f"\nDecision: {decision.answers[0].probability} for user message: '{user_message}'")
+        return True if decision.answers[0].probability > 0.6 else False
 
 
-    def GenerateSimpleChatResponse(self, messages_state: MessagesState) -> MessagesState:
-        # Placeholder for generating simple chat response
-        chat_prompt = """
-        You are a helpful recipe assistant who can suggest recipes based on user's needs. You will not assist the user other than recipe suggestions. 
-        If the user is asking for anything other than recipes, politely decline and mention you can only assist with recipe suggestions.
-        """
-        return self._chat_and_append(messages_state, chat_prompt)
-            
-
-    def extractUserRecipeIntentFromMessages(self, messages_state: MessagesState) -> MessagesState:
-        # Below user prompt can signify 
-        # 1. a user adding items to cart where the recipe will be based on their cart items / user uses smart devices for managing their shopping list
-        # 2. meijer specific products chosen based on criteria at the store like items in promotion / high inventory items at the (can be store specific).
-        extraction_prompt = """
-        You are a data extraction assistant. Your job is to extract information from the user input and return them STRICTLY as a valid JSON object.
-        """
-        response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "recipe_extraction",
-                        "strict": True,
-                        "schema": UserRecipeIntent.model_json_schema()
-                    }
-                }
-
-        return self._chat_and_append(messages_state, extraction_prompt, response_format)
-            
-        
-    def _chat_and_append(self, messages_state: MessagesState, system_prompt: str, response_format: dict | None = None) -> MessagesState:
-        messages = [
-            {"role": "system", "content": system_prompt},
-            *convert_to_openai_messages(
-                message for message in messages_state["messages"] if message.type == "human"
-            )
+    def handle_message(self, state: WorkflowState) -> WorkflowState:
+        # Placeholder for handling user messages
+        user_messages=[
+            msg for msg in state['messages_state']['messages']
+            if isinstance(msg, HumanMessage)
         ]
+        print(f"\nUser messages: {user_messages}")
+        if state['is_recipe_needed']:
+            response = self.extractUserRecipeIntentFromMessages(user_messages)
+            state['userRecipeIntent'] = response
+            # state['userRecipeIntent'] = UserRecipeIntent.model_validate_json(response)
+        else:
+            response = self.generateSimpleChatResponse(user_messages)
+            # Append the assistant message to the messages 
+            state['messages_state']['messages'] = [*state['messages_state']['messages'], AIMessage(content=response.content)]
 
-        print(f"\nMessages sent to OpenAI: \n{messages}")
+        print(f"\nAssistant response: {response}")
+        return state
 
-        options = {}
-        if response_format is not None:
-            options["response_format"] = response_format
 
-        try:
-            response = self.aiclient.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                **options
-            )
+    def generateSimpleChatResponse(self, messages: list[BaseMessage]) -> BaseMessage:
+        # Placeholder for generating simple chat response
+        chat_prompt = "You are a helpful recipe assistant. Politely decline requests unrelated \
+                        to recipes and briefly say you can help with recipe suggestions."
+        return self.chatClient.invoke(
+            input=[
+                SystemMessage(content=chat_prompt),
+                messages[-1]    # latest human message
+            ]
+        )
+            
 
-            item_message = response.choices[0].message
-            print(f"\nOpenAI response message: {item_message}")
+    def extractUserRecipeIntentFromMessages(self, messages: list[BaseMessage]):
+        extraction_prompt = """
+        You are a data extraction assistant who can assist with extracting structured recipe-related information from user's requests.
+        Interpret the latest user request as the current request. Use earlier user requests only to resolve references or supply relevant
+        recipe context. If the latest request changes or contradicts an earlier request, follow the latest request.
+        """
+        user_request_history = "\n".join([f"Request {i}: {msg.content}" for i, msg in enumerate(messages, start=1)])
+        print(f"\nUser request history: \n{user_request_history}")
 
-            # convert the OpenAI response message to an AIMessage
-            assistant_message = AIMessage(
-                content=item_message.content,
-                additional_kwargs={
-                    "refusal": item_message.refusal,
-                    "tool_calls": item_message.tool_calls,
+        return self.structuredClient.invoke(
+            input=[
+                SystemMessage(content=extraction_prompt),
+                HumanMessage(content=user_request_history)
+            ]
+        )
+        return self.chatClient.invoke(
+            input=[
+                SystemMessage(content=extraction_prompt),
+                HumanMessage(content=user_request_history)
+            ],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "recipe_extraction",
+                    "strict": True,
+                    "schema": UserRecipeIntent.model_json_schema()
                 }
-            )
-
-            # Append the assistant message to the messages state and return the updated messages state
-            messages_state['messages'] = [*messages_state['messages'], assistant_message]
-            return messages_state
-
-        except Exception as e:
-            logging.exception(f"Exception in _chat_and_append : {e}")
+            }
+        )
 
 
 
@@ -125,21 +122,35 @@ if __name__ == "__main__":
             "messages_state": MessagesState(
                 messages=[
                     # HumanMessage(content="I am at Meijer store 21 and I have tomatoes, ground beef, and onions. I am thinking of making some Mediteranean dish."),
-                    HumanMessage(content="Give me an option without eggs"),
+                    # HumanMessage(content="I like to play games"),
+                    HumanMessage(content="I want to make an american dessert"),
                 ]
-            )
+            ),
+            "is_recipe_needed": True
         }
-    # Example usage
-    # response = prompt_instance.extractUserIntentFromWorkflowState(
-    #     state={
-    #         "messages_state": MessagesState(
-    #             messages=[HumanMessage(content="I am at Meijer store 21 and I have tomatoes, ground beef, and onions. I am thinking of making some Mediteranean dish.")]
-    #         )
-    #     }
-    # )
-    response = prompt_instance.IsRecipeWarranted(messages_state=state["messages_state"])
-    print(response)
+    
+    # Example usage for handle_message
+    # --------------------------------
+    response = prompt_instance.handle_message(
+        state=state
+    )
+    print(f"\nHandle Message Response: {response}")
 
+
+    # # Example usage to get Structured User Intent from prompt message
+    #----------------------------------------------------------------
+    response = prompt_instance.extractUserRecipeIntentFromMessages(
+        messages=state["messages_state"]['messages']
+    )
+    print (f"\nExtracted User Recipe Intent: {response}")
+
+    # # Example usage to get decisions AI response
+    # #------------------------------------------
+    # response = prompt_instance.IsRecipeWarranted(messages_state=state["messages_state"])
+    # print(response)
+
+    # Example usage to get custom recipes
+    # -----------------------------------
     # recipes = prompt_instance.get_custom_recipes(response)
     # print(recipes)
 

@@ -6,7 +6,7 @@ from langgraph.graph import MessagesState
 
 # Define a reusable Literal type for clean code
 StoreCategory = Literal["produce", "dairy", "bakery", "meat", "pantry", "frozen", "seafood"]
-RecipeChannel = Literal['store', 'web']
+RecipeChannel = Literal['rag', 'web']
 
 class UserRecipeIntent(BaseModel):
     model_config = ConfigDict(extra='forbid')
@@ -48,7 +48,7 @@ class Recipe(BaseModel):
     instructions: str=Field(..., description="Instructions to prepare the recipe")
     nutrition: Optional[NutritionInfo]=Field(..., description="Nutritional information for the recipe, e.g., calories, protein, fat")
     prep_time: int=Field(..., description="Preparation time for the recipe in minutes")
-    channel: RecipeChannel=Field(..., description="channel source for the recipe, if a tool is used, it would be 'tool', otherwise 'web'")
+    channel: RecipeChannel=Field(..., description="channel source for the recipe, if a tool is used, it would be 'rag', otherwise 'web'")
     citation: Optional[str]=Field(..., description="Citation for the recipe")
 
 
@@ -64,7 +64,7 @@ class RecipeContext(BaseModel):
 class WorkflowState(TypedDict):
     messages_state: MessagesState=Field(description="List of chat messages exchanged in the workflow")
     is_recipe_needed: bool=Field(description="Indicates whether the last message from user is related to a recipe")
-    user_intent: UserRecipeIntent=Field(description="The intent of the user based on their input")
+    userRecipeIntent: UserRecipeIntent=Field(description="The intent of the user based on their input")
     recipe_items: List[str]=Field(description="List of recipe items generated based on user intent and shrinkage adjustments")
     recipe_context: RecipeContext=Field(description="Contextual information and store recipes related to the current workflow")
     evaluator_output: EvaluatorOutput=Field(description="Output from the evaluator including feedback and scores")

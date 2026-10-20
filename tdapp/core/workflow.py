@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_openai import OpenAIEmbeddings
 from langgraph.graph import START, MessagesState, StateGraph, END
@@ -19,15 +21,15 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 memory = MemorySaver()
 
 
-# Initialize the Redis semantic cache
-set_llm_cache(
-    RedisSemanticCache(
-        redis_url=REDIS_URL,
-        embeddings = embeddings,
-        distance_threshold = 0.2,
-        ttl=3600
-    )
-)
+# # Initialize the Redis semantic cache
+# set_llm_cache(
+#     RedisSemanticCache(
+#         redis_url=REDIS_URL,
+#         embeddings = embeddings,
+#         distance_threshold = 0.2,
+#         ttl=3600
+#     )
+# )
 
 
 class Workflow():
@@ -36,50 +38,35 @@ class Workflow():
         self.prompt_handler = PromptHandler()
         self.recipe_handler = RecipeHandler()
 
+
     def check_user_intent(self, state: WorkflowState) -> dict:
         # Placeholder for checking user intent in the state
-        is_recipe_needed = self.prompt_handler.IsRecipeWarranted(state['messages_state'])
-
+        is_recipe_needed = self.prompt_handler.IsRecipeWarranted(state['messages_state']['messages'])
         state['is_recipe_needed'] = is_recipe_needed
         return state
 
 
-    def route_user_intent(self, state: WorkflowState) -> str:
-        return "extract_user_recipe_intent" if state['is_recipe_needed'] else "generate_chat_response"
-        
-
-    def generate_chat_response(self, state: WorkflowState) -> dict:
-        # Placeholder for extracting user intent from the state
-        messages_state = self.prompt_handler.GenerateSimpleChatResponse(state['messages_state'])
-
-        state['messages_state'] = messages_state
-        print(f"\nState after generating chat response: {state}")
+    def handle_user_message(self, state: WorkflowState) -> dict:
+        # Placeholder for handling user messages
+        state = self.prompt_handler.handle_message(state)
         return state
 
 
-    def extract_user_recipe_intent(self, state: WorkflowState) -> dict:
-        # Placeholder for extracting user intent from the state
-        messages_state = self.prompt_handler.extractUserRecipeIntentFromMessages(state['messages_state'])
+    def route_recipe_intent(self, state: WorkflowState) -> str:
+        return "get_promo_items" if state['is_recipe_needed'] else "end"
 
-        state['messages_state'] = messages_state
-        state['user_intent']= UserRecipeIntent.model_validate_json(messages_state['messages'][-1].content)
-        print(f"\nState after extracting user intent: {state}")
-        return state
-
-
-    def get_recipe_items(self, state: WorkflowState) -> dict:
+    
+    def get_promo_items(self, state: WorkflowState) -> dict:
         # Placeholder for generating recipe items based on user intent
-        recipe_items = self.recipe_handler.get_recipe_items(state['user_intent'])
-
+        recipe_items = self.recipe_handler.get_promo_items(state['userRecipeIntent'])
         state['recipe_items'] = recipe_items
-        print(f"\nState after generating recipe items: {state}")
+        # print(f"\nState after generating recipe items: {state}")
         return state
 
 
     async def get_recipes(self, state: WorkflowState) -> dict:
         # Placeholder for generating recipes based on recipe items
         recipes = await self.recipe_handler.get_custom_recipes(state)
-
         state['recipe_context'] = recipes
         print(f"\nState after generating recipes: {state}")
         return state
@@ -89,23 +76,21 @@ class Workflow():
         graph_builder = StateGraph(WorkflowState)
 
         graph_builder.add_node("check_user_intent", self.check_user_intent)
-        graph_builder.add_node("generate_chat_response", self.generate_chat_response)
-        graph_builder.add_node("extract_user_recipe_intent", self.extract_user_recipe_intent)
-        graph_builder.add_node("get_recipe_items", self.get_recipe_items)
+        graph_builder.add_node("handle_user_message", self.handle_user_message)
+        graph_builder.add_node("get_promo_items", self.get_promo_items)
         graph_builder.add_node("get_recipes", self.get_recipes)
 
         graph_builder.add_edge(START, "check_user_intent")
+        graph_builder.add_edge("check_user_intent", "handle_user_message")
         graph_builder.add_conditional_edges(
-            "check_user_intent", 
-            self.route_user_intent,
+            "handle_user_message", 
+            self.route_recipe_intent,
             {
-                "extract_user_recipe_intent": 'extract_user_recipe_intent',
-                "generate_chat_response": 'generate_chat_response'
+                "get_promo_items": 'get_promo_items',
+                "end": END
             }
         )
-        graph_builder.add_edge("generate_chat_response", END)
-        graph_builder.add_edge("extract_user_recipe_intent", "get_recipe_items")
-        graph_builder.add_edge("get_recipe_items", "get_recipes")
+        graph_builder.add_edge("get_promo_items", "get_recipes")
         graph_builder.add_edge("get_recipes", END)
         
         graph = graph_builder.compile(checkpointer=memory)
@@ -117,43 +102,44 @@ class Workflow():
 
 
 
-def run_chat_workflow():
-    import asyncio
-
-    default_user_prompt:str = "I am at Meijer store 21 and I want to make biryani. I have only chicken and rice."
+async def _run_chat_workflow():
+    
+    # default_user_prompt:str = "I am at Meijer store 21 and I want to make biryani. I have chicken and rice."
+    default_user_prompt:str = "I want to make biryani. I have chicken and rice."
     chat_workflow = Workflow().create_workflow_graph()
     history: list[BaseMessage] = []
 
     initial_state= WorkflowState()
-    initial_state = {
-    "messages_state": {
-        "messages": [HumanMessage(content=default_user_prompt)]
+    initial_state["messages_state"]={
+            "messages": [HumanMessage(content=default_user_prompt)]
         }
-    }
+
     # # result = asyncio.run(chat_workflow.ainvoke(initial_state))
     # print(result)
 
     print("\nRunning chat workflow...\n")
-
+    current_state = initial_state
 
     while True:
         try:
             user_input = input("\nYou: ").strip()
-        except KeyboardInterrupt:
+        except (EOFError, KeyboardInterrupt):
             print("\nExiting chat workflow.")
             break
 
         if not user_input:
             user_input = default_user_prompt
         
-        config = {"configurable": {"thread_id": "thread_1"}}
-        initial_state['messages_state']['messages'] = [*history, HumanMessage(content=user_input)]
+        config = {"configurable": {"thread_id": str(uuid4())}}
+        current_state['messages_state']['messages'] = [*history, HumanMessage(content=user_input)]
         
-        result = asyncio.run(chat_workflow.ainvoke(initial_state, config=config))
+        result = await chat_workflow.ainvoke(current_state, config=config)
         history = result['messages_state']['messages']
 
 
 
 
 if __name__ == "__main__":
-    run_chat_workflow()
+    import asyncio
+
+    asyncio.run(_run_chat_workflow())

@@ -27,7 +27,7 @@ class RAGHandler:
         if self.db is None:
             print("FAISS index is not loaded.")
             return []
-        docs = self.db.similarity_search(query, k=2)
+        docs = self.db.similarity_search(query, k=1)
         # return [{"text": doc.page_content, "metadata": doc.metadata} for doc in docs]
         retrieved_doc = [{"text": doc.page_content, "metadata": doc.metadata} for doc in docs]
         print(f"\nRAG retrieved_data: \n{retrieved_doc}")
