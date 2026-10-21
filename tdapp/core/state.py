@@ -64,6 +64,7 @@ class RecipeContext(BaseModel):
 class WorkflowState(TypedDict):
     messages_state: MessagesState=Field(description="List of chat messages exchanged in the workflow")
     is_recipe_needed: bool=Field(description="Indicates whether the last message from user is related to a recipe")
+    is_human_agent_needed: bool=Field(description="Indicates whether the last message from user is related to a human agent")
     userRecipeIntent: UserRecipeIntent=Field(description="The intent of the user based on their input")
     recipe_items: List[str]=Field(description="List of recipe items generated based on user intent and shrinkage adjustments")
     recipe_context: RecipeContext=Field(description="Contextual information and store recipes related to the current workflow")

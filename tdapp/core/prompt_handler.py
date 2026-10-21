@@ -5,6 +5,7 @@ from openai import OpenAI
 import dotenv
 from tdapp.core.state import UserRecipeIntent, WorkflowState
 from langgraph.graph import MessagesState
+from langgraph.types import interrupt
 
 
 # try:
@@ -29,7 +30,7 @@ class PromptHandler():
         self.deployed_model = os.environ.get("DEPLOYMENT_NAME")
 
     
-    def IsRecipeWarranted(self, messages: list[BaseMessage]) -> bool:
+    def GetUserIntent(self, messages: list[BaseMessage]) -> dict:
         # get last user message
         user_message = next(
             msg.content
@@ -44,12 +45,46 @@ class PromptHandler():
             questions=[
                 {
                     "type": "predicate",
+                    "name": "is_recipe_needed",
                     "instructions": "Is the user looking for a new recipe suggestion?"
+                },
+                {
+                    "type": "predicate",
+                    "name": "is_human_agent_needed",
+                    "instructions": "Is the user looking for a human agent assistance?"
+                },
+                {
+                    "type": "choice",
+                    "name": "emotional_level",
+                    "instructions": "What is the user's emotional level?",
+                    "choices": [
+                        {"value": "Happy", "description": "The user is feeling happy."},
+                        {"value": "Sad", "description": "The user is feeling sad."},
+                        {"value": "Angry", "description": "The user is feeling angry."},
+                        {"value": "Neutral", "description": "The user is feeling neutral."}
+                    ]
                 }
             ]
         )
-        print(f"\nDecision: {decision.answers[0].probability} for user message: '{user_message}'")
-        return True if decision.answers[0].probability > 0.6 else False
+        print(f"\nDecision: {decision.answers} for user message: '{user_message}'")
+        return {
+            "is_recipe_needed": True if decision.answers[0].probability > 0.6 else False,
+            "is_human_agent_needed": True if decision.answers[1].probability > 0.5 else False,
+            "emotional_level": decision.answers[2].choice if decision.answers[2].choice else "Neutral"
+        }
+
+
+    def handle_human_agent(self, messages: list[BaseMessage]) -> dict:
+        # Placeholder for handling human agent requests        
+        print(f"\nHandling human agent request: {messages[-1].content}")
+        human_agent_response = interrupt(
+            {
+                "reason": "User requested human agent assistance.",
+                "user_message": messages[-1].content
+            }
+        )
+
+        return {"messages": [*messages, AIMessage(content=human_agent_response, metadata={"sender": "human_agent"})]}
 
 
     def handle_message(self, state: WorkflowState) -> WorkflowState:
