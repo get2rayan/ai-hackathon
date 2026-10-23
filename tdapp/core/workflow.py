@@ -130,7 +130,7 @@ class Workflow():
 
 async def _run_chat_workflow():
     # from IPython import display, Image
-    # default_user_prompt:str = "I am at Meijer store 21 and I want to make biryani. I have chicken and rice."
+    # default_user_prompt:str = "I am at Store 21 and I want to make biryani. I have chicken and rice."
     # default_user_prompt:str = "I want to make biryani. I have chicken and rice."
     default_user_prompt:str = "I want to get to a representative. I am not happy."
     chat_workflow = Workflow().create_workflow_graph()
@@ -171,11 +171,12 @@ async def _run_chat_workflow():
         # with the agent's response once it is available.
         while True:
             snapshot = await chat_workflow.aget_state(config)
-            print(f"Current workflow state: {snapshot}")
+            print(f"\nCurrent workflow state: {snapshot}")
+            print(f"\nNext nodes: {snapshot.next}")
             if snapshot.next:  # graph is paused at an interrupted node
                 agent_response = input("\nHuman agent: ").strip()
                 if not agent_response:
-                    agent_response = "An agent will follow up with you shortly."
+                    agent_response = "A human agent will follow up with you shortly."
                 result = await chat_workflow.ainvoke(
                     Command(resume=agent_response), config=config
                 )

@@ -1,33 +1,123 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h2>{% block title %}Home{% endblock title %}</h2>
+  <h2>{% block title %}Recipe Assistant{% endblock title %}</h2>
 {% endblock header %}
 
 {% block content %}
-  <p>
-    <!-- Learn more about this project by visiting the <a href="{{ url_for('pages.about') }}">About</a>. -->
-  </p>
-  <form method="post" action="/">
-    <div class="form-group">
-      <label for="userPrompt">User Prompt</label>
-      <input type="text" name="userPrompt" id="userPrompt"
-              placeholder="User prompt" class="form-control"
-              value="{{ request.form['userPrompt'] }}"></input>
+  <section class="chat-shell" aria-label="Recipe assistant chat">
+    <div class="chat-toolbar">
+      <p class="chat-caption">STORE RECIPE AGENT</p>
+      <button type="button" class="chat-clear" id="clear-chat">Clear chat</button>
     </div>
-    <div class="form-group">
-      <button type="submit" class="btn btn-primary">Submit</button>
-      <input type="reset" class="btn btn-secondary" name="Reset">
+
+    <div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-relevant="additions">
+      <p class="chat-empty" id="chat-empty">What would you like to cook today?</p>
     </div>
-    <div class="form-group">
-      <label for="extractedContent">User prompt extracted content</label>
-      <textarea name="extractedContent" placeholder="" id="extractedContent"
-                class="form-control" style="height: 115px;">{{ extract_args }}</textarea>
-    </div>
-    <div class="form-group">
-      <label for="recipeSuggestionContent">Recipe suggestion content </label>
-      <textarea name="recipeSuggestionContent" placeholder="" id="recipeSuggestionContent"
-                class="form-control" style="height: 300px;">{{ recipe_resp }}</textarea>
-    </div>
-  </form>
+
+    <form class="chat-composer" id="chat-form" action="{{ url_for('pages.chat') }}" method="post">
+      <label class="sr-only" for="userPrompt">Your message</label>
+      <textarea id="userPrompt" name="prompt" rows="2" maxlength="2000"
+                placeholder="Ask for a recipe or ingredient idea..." required></textarea>
+      <div class="composer-footer">
+        <span id="chat-status" role="status" aria-live="polite"></span>
+        <button type="submit" id="send-message">Send <span aria-hidden="true">&#8594;</span></button>
+      </div>
+    </form>
+  </section>
+
+  <script>
+    (() => {
+      const storageKey = "store-recipe-chat-v1";
+      const chatLog = document.getElementById("chat-log");
+      const emptyMessage = document.getElementById("chat-empty");
+      const form = document.getElementById("chat-form");
+      const input = document.getElementById("userPrompt");
+      const sendButton = document.getElementById("send-message");
+      const status = document.getElementById("chat-status");
+      let messages = [];
+
+      try {
+        const storedMessages = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        if (Array.isArray(storedMessages)) {
+          messages = storedMessages.filter(message =>
+            message && ["user", "assistant"].includes(message.role) && typeof message.content === "string"
+          ).slice(-50);
+        }
+      } catch (error) {
+        localStorage.removeItem(storageKey);
+      }
+
+      function renderMessage(message) {
+        const bubble = document.createElement("article");
+        bubble.className = `chat-message chat-message--${message.role}`;
+        const label = document.createElement("span");
+        label.className = "chat-message__label";
+        label.textContent = message.role === "user" ? "You" : "Recipe assistant";
+        const content = document.createElement("p");
+        content.className = "chat-message__content";
+        content.textContent = message.content;
+        bubble.append(label, content);
+        chatLog.append(bubble);
+        emptyMessage.hidden = true;
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return bubble;
+      }
+
+      messages.forEach(renderMessage);
+
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+        const prompt = input.value.trim();
+        if (!prompt) return;
+
+        const priorMessages = messages.slice(-20);
+        messages.push({ role: "user", content: prompt });
+        renderMessage(messages[messages.length - 1]);
+        const pendingReply = renderMessage({ role: "assistant", content: "Thinking..." });
+        input.value = "";
+        input.disabled = true;
+        sendButton.disabled = true;
+        status.textContent = "Working on your request";
+
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt, messages: priorMessages })
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || "Message could not be sent.");
+
+          pendingReply.querySelector(".chat-message__content").textContent = result.reply;
+          messages.push({ role: "assistant", content: result.reply });
+          messages = messages.slice(-50);
+          localStorage.setItem(storageKey, JSON.stringify(messages));
+        } catch (error) {
+          pendingReply.querySelector(".chat-message__content").textContent = error.message;
+        } finally {
+          input.disabled = false;
+          sendButton.disabled = false;
+          status.textContent = "";
+          input.focus();
+          chatLog.scrollTop = chatLog.scrollHeight;
+        }
+      });
+
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          form.requestSubmit();
+        }
+      });
+
+      document.getElementById("clear-chat").addEventListener("click", () => {
+        messages = [];
+        localStorage.removeItem(storageKey);
+        chatLog.querySelectorAll(".chat-message").forEach(message => message.remove());
+        emptyMessage.hidden = false;
+        input.focus();
+      });
+    })();
+  </script>
 {% endblock content %}

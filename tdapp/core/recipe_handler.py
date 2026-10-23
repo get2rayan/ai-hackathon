@@ -1,4 +1,5 @@
 from agents import Agent, AgentOutputSchema, Runner, function_tool, trace
+from langchain_core.messages import HumanMessage
 import sys, os, dotenv
 import mlflow
 dotenv.load_dotenv(override=True)
@@ -108,6 +109,14 @@ class RecipeHandler:
             cuisine = None
 
         recipe_ingredients = ', '.join(state.get('recipe_items', []))
+        latest_user_request = next(
+            (
+                message.content
+                for message in reversed(state.get('messages_state', {}).get('messages', []))
+                if isinstance(message, HumanMessage)
+            ),
+            "",
+        )
 
         print(f"\nrecipe_name : {recipe_name} | cuisine: {cuisine} | recipe_ingredients: {recipe_ingredients} | serving_size: {serving_size}")
         if(recipe_name and serving_size and recipe_ingredients):
@@ -130,6 +139,8 @@ class RecipeHandler:
             user_prompt_message = f"User wants a recipe to make {cuisine} dish"
         elif (recipe_ingredients):
             user_prompt_message=f"User wants a recipe that can be made using most of the following ingredients: {recipe_ingredients}"
+        else:
+            user_prompt_message = f"Suggest a recipe based on this request: {latest_user_request}"
 
         print (f"\nUser prompt message : {user_prompt_message}")
         

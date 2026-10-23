@@ -84,7 +84,7 @@ class PromptHandler():
             }
         )
 
-        return {"messages": [*messages, AIMessage(content=human_agent_response, metadata={"sender": "human_agent"})]}
+        return {"messages": [*messages, AIMessage(content=human_agent_response, response_metadata={"sender": "human_agent"})]}
 
 
     def handle_message(self, state: WorkflowState) -> WorkflowState:
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     state={
             "messages_state": MessagesState(
                 messages=[
-                    # HumanMessage(content="I am at Meijer store 21 and I have tomatoes, ground beef, and onions. I am thinking of making some Mediteranean dish."),
+                    # HumanMessage(content="I am at Store 21 and I have tomatoes, ground beef, and onions. I am thinking of making some Mediteranean dish."),
                     # HumanMessage(content="I like to play games"),
                     HumanMessage(content="I want to make an american dessert"),
                 ]
