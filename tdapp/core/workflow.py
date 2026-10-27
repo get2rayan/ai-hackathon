@@ -35,9 +35,9 @@ memory = MemorySaver()
 
 class Workflow():
 
-    def __init__(self):
-        self.prompt_handler = PromptHandler()
-        self.recipe_handler = RecipeHandler()
+    def __init__(self, stream_callback=None):
+        self.prompt_handler = PromptHandler(stream_callback=stream_callback)
+        self.recipe_handler = RecipeHandler(stream_callback=stream_callback)
 
 
     def check_user_intent(self, state: WorkflowState) -> dict:

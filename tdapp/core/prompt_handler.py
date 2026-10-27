@@ -18,7 +18,8 @@ dotenv.load_dotenv(override=True)
 
 class PromptHandler():
 
-    def __init__(self) -> None:
+    def __init__(self, stream_callback=None) -> None:
+        self.stream_callback = stream_callback
 
         self.chatClient = ChatOpenAI(
             base_url=os.environ.get("OPENROUTER_BASE_URL"),
@@ -111,11 +112,26 @@ class PromptHandler():
         # Placeholder for generating simple chat response
         chat_prompt = "You are a helpful recipe assistant. Politely decline requests unrelated \
                         to recipes and briefly say you can help with recipe suggestions."
+        input_messages = [SystemMessage(content=chat_prompt), messages[-1]]
+        if self.stream_callback:
+            response_parts = []
+            for chunk in self.chatClient.stream(input=input_messages):
+                content = chunk.content
+                if isinstance(content, str):
+                    text = content
+                else:
+                    text = "".join(
+                        block.get("text", "")
+                        for block in content
+                        if isinstance(block, dict) and isinstance(block.get("text"), str)
+                    )
+                if text:
+                    response_parts.append(text)
+                    self.stream_callback(text)
+            return AIMessage(content="".join(response_parts))
+
         return self.chatClient.invoke(
-            input=[
-                SystemMessage(content=chat_prompt),
-                messages[-1]    # latest human message
-            ]
+            input=input_messages
         )
             
 

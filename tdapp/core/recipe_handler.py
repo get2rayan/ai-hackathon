@@ -26,7 +26,8 @@ mlflow.langchain.autolog()
 mlflow.openai.autolog()
 
 class RecipeHandler:
-    def __init__(self) -> None:
+    def __init__(self, stream_callback=None) -> None:
+        self.stream_callback = stream_callback
         self.model = os.getenv("DEPLOYMENT_NAME")
         self.rag_handler = RAGHandler()
         pass
@@ -157,14 +158,27 @@ class RecipeHandler:
                 model=self.model,
                 tools=[function_tool(self.retrieve_recipe_context)],
                 output_type=AgentOutputSchema(
-                    RecipeContext, 
-                    strict_json_schema=True
-                )
+                    RecipeContext,
+                    strict_json_schema=True,
+                ),
             )
 
+            if self.stream_callback:
+                recipe_response = Runner.run_streamed(
+                    starting_agent=recipe_agent,
+                    input=user_prompt_message,
+                )
+                async for event in recipe_response.stream_events():
+                    if event.type != "raw_response_event":
+                        continue
+                    data = event.data
+                    if getattr(data, "type", None) == "response.output_text.delta":
+                        self.stream_callback(data.delta)
+                return recipe_response.final_output
+
             recipe_response = await Runner.run(
-                starting_agent=recipe_agent, 
-                input=user_prompt_message
+                starting_agent=recipe_agent,
+                input=user_prompt_message,
             )
                     
         return recipe_response.final_output

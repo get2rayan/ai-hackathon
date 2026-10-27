@@ -86,11 +86,46 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ prompt, messages: priorMessages })
           });
-          const result = await response.json();
-          if (!response.ok) throw new Error(result.error || "Message could not be sent.");
+          if (!response.ok) {
+            const result = await response.json();
+            throw new Error(result.error || "Message could not be sent.");
+          }
 
-          pendingReply.querySelector(".chat-message__content").textContent = result.reply;
-          messages.push({ role: "assistant", content: result.reply });
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          const replyElement = pendingReply.querySelector(".chat-message__content");
+          let buffer = "";
+          let streamedText = "";
+          let finalReply = null;
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+
+            let eventBoundary;
+            while ((eventBoundary = buffer.indexOf("\n\n")) !== -1) {
+              const eventText = buffer.slice(0, eventBoundary);
+              buffer = buffer.slice(eventBoundary + 2);
+              const dataLine = eventText.split("\n").find(line => line.startsWith("data: "));
+              if (!dataLine) continue;
+
+              const event = JSON.parse(dataLine.slice(6));
+              if (event.type === "delta") {
+                streamedText += event.text;
+                replyElement.textContent = streamedText;
+                chatLog.scrollTop = chatLog.scrollHeight;
+              } else if (event.type === "done") {
+                finalReply = event.reply;
+              } else if (event.type === "error") {
+                throw new Error(event.error);
+              }
+            }
+          }
+
+          if (finalReply === null) throw new Error("The response stream ended unexpectedly.");
+          replyElement.textContent = finalReply;
+          messages.push({ role: "assistant", content: finalReply });
           messages = messages.slice(-50);
           localStorage.setItem(storageKey, JSON.stringify(messages));
         } catch (error) {

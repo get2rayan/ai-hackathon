@@ -1,8 +1,10 @@
 import asyncio
+import json
 import threading
+from queue import Queue
 from uuid import uuid4
 
-from flask import Blueprint, current_app, flash, jsonify, render_template, request
+from flask import Blueprint, Response, current_app, flash, jsonify, render_template, request, stream_with_context
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.graph import MessagesState
 from langgraph.types import Command
@@ -48,7 +50,7 @@ def home():
 
 @bp.post("/chat")
 def chat():
-    """Run a chat turn and return the assistant response as JSON."""
+    """Run a chat turn and stream the assistant response as server-sent events."""
     payload = request.get_json(silent=True) or {}
     user_prompt = payload.get("prompt", "").strip()
     if not user_prompt:
@@ -68,20 +70,45 @@ def chat():
 
     print(f"\nMessages: {messages}")
 
+    workflow_state = WorkflowState()
+    workflow_state["messages_state"] = MessagesState(messages=messages)
+    config = {"configurable": {"thread_id": str(uuid4())}}
+    events = Queue()
+
+    def publish_event(event):
+        events.put(event)
+
     try:
-        workflow_state = WorkflowState()
-        workflow_state["messages_state"] = MessagesState(messages=messages)
-        config = {"configurable": {"thread_id": str(uuid4())}}
         loop = _get_workflow_loop()
-        result = asyncio.run_coroutine_threadsafe(
-            _invoke_workflow(workflow_state, config), loop
-        ).result()
-        print(f"\nResult: {result}")
-        reply = _format_workflow_reply(result)        
-        return jsonify(reply=reply)
+        future = asyncio.run_coroutine_threadsafe(
+            _invoke_workflow(workflow_state, config, publish_event), loop
+        )
     except Exception:
-        current_app.logger.exception("Unable to process chat message")
+        current_app.logger.exception("Unable to start chat workflow")
         return jsonify(error="Sorry, I couldn't process that message. Please try again."), 500
+
+    def stream_events():
+        while True:
+            event = events.get()
+            if event is None:
+                try:
+                    result = future.result()
+                    reply = _format_workflow_reply(result)
+                    yield _server_sent_event({"type": "done", "reply": reply})
+                except Exception:
+                    current_app.logger.exception("Unable to process chat message")
+                    yield _server_sent_event({
+                        "type": "error",
+                        "error": "Sorry, I couldn't process that message. Please try again.",
+                    })
+                break
+            yield _server_sent_event({"type": "delta", "text": event})
+
+    return Response(
+        stream_with_context(stream_events()),
+        mimetype="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 def _get_workflow_loop():
@@ -99,25 +126,35 @@ def _get_workflow_loop():
     return _workflow_loop
 
 
-async def _invoke_workflow(workflow_state: WorkflowState, config: dict) -> dict:
+async def _invoke_workflow(workflow_state: WorkflowState, config: dict, stream_callback) -> dict:
     """Invoke the workflow and resume any human-agent interrupt."""
-    workflow = Workflow().create_workflow_graph()
-    result = await workflow.ainvoke(workflow_state, config=config)
+    try:
+        workflow = Workflow(stream_callback=stream_callback).create_workflow_graph()
+        result = await workflow.ainvoke(workflow_state, config=config)
 
-    while True:
-        snapshot = await workflow.aget_state(config)
-        if not snapshot.next:
-            return result
+        while True:
+            snapshot = await workflow.aget_state(config)
+            if not snapshot.next:
+                return result
 
-        result = await workflow.ainvoke(
-            Command(resume="A human agent will follow up with you shortly."),
-            config=config,
-        )
+            result = await workflow.ainvoke(
+                Command(resume="A human agent will follow up with you shortly."),
+                config=config,
+            )
+    finally:
+        stream_callback(None)
+
+
+def _server_sent_event(event: dict) -> str:
+    """Serialize one event for the browser's Server-Sent Events reader."""
+    return f"data: {json.dumps(event)}\n\n"
 
 
 def _format_workflow_reply(result: dict) -> str:
     """Convert workflow output into readable assistant reply text."""
     recipe_context = result.get("recipe_context")
+    if isinstance(recipe_context, str):
+        return recipe_context
     recipes = getattr(recipe_context, "recipes", []) if recipe_context else []
     if recipes:
         return "\n\n".join(_format_recipe(recipe) for recipe in recipes)
