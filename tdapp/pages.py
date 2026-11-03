@@ -8,13 +8,14 @@ from flask import Blueprint, Response, current_app, flash, jsonify, render_templ
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.graph import MessagesState
 from langgraph.types import Command
-
+from langfuse.langchain import CallbackHandler
 from tdapp.core.state import WorkflowState
 from tdapp.core.workflow import Workflow
 
 bp=Blueprint("pages", __name__)
 _workflow_loop = None
 _workflow_loop_lock = threading.Lock()
+langfuse_handler = CallbackHandler()
 
 
 @bp.route("/", methods=('GET', 'POST'))
@@ -72,7 +73,10 @@ def chat():
 
     workflow_state = WorkflowState()
     workflow_state["messages_state"] = MessagesState(messages=messages)
-    config = {"configurable": {"thread_id": str(uuid4())}}
+    config = {
+        "configurable": {"thread_id": str(uuid4())},
+        "callbacks": [langfuse_handler]
+    }
     events = Queue()
 
     def publish_event(event):
