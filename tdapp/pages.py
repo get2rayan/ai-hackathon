@@ -2,7 +2,7 @@ import asyncio
 import json
 import threading
 from queue import Queue
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from flask import Blueprint, Response, current_app, flash, jsonify, render_template, request, stream_with_context
 from langchain_core.messages import AIMessage, HumanMessage
@@ -10,7 +10,7 @@ from langgraph.graph import MessagesState
 from langgraph.types import Command
 from langfuse.langchain import CallbackHandler
 from tdapp.core.state import WorkflowState
-from tdapp.core.workflow import Workflow
+from tdapp.core.workflow import Workflow, get_postgres_checkpointer
 
 bp=Blueprint("pages", __name__)
 _workflow_loop = None
@@ -28,15 +28,14 @@ def home():
             flash('Please enter a valid user prompt')
             return render_template("pages/home.html")
         else: 
-            workflow = Workflow()
             workflow_state = WorkflowState()
             workflow_state['messages_state'] = MessagesState(messages=[HumanMessage(content=userprompt)])
-            wg = workflow.create_workflow_graph()
-            # try:
-            response = wg.invoke(workflow_state)
-            # except Exception as e:
-            #     flash('An error occurred while processing your request : \n' + str(e))
-            #     return render_template("pages/home.html")
+            config = {"configurable": {"thread_id": str(uuid4())}}
+            loop = _get_workflow_loop()
+            response = asyncio.run_coroutine_threadsafe(
+                _invoke_workflow(workflow_state, config, lambda event: None),
+                loop,
+            ).result()
 
             # messages = {
             #     "content":{
@@ -71,10 +70,16 @@ def chat():
 
     print(f"\nMessages: {messages}")
 
+    thread_id = payload.get("thread_id")
+    try:
+        thread_id = str(UUID(thread_id))
+    except (TypeError, ValueError, AttributeError):
+        thread_id = str(uuid4())
+
     workflow_state = WorkflowState()
     workflow_state["messages_state"] = MessagesState(messages=messages)
     config = {
-        "configurable": {"thread_id": str(uuid4())},
+        "configurable": {"thread_id": thread_id},
         "callbacks": [langfuse_handler]
     }
     events = Queue()
@@ -133,18 +138,41 @@ def _get_workflow_loop():
 async def _invoke_workflow(workflow_state: WorkflowState, config: dict, stream_callback) -> dict:
     """Invoke the workflow and resume any human-agent interrupt."""
     try:
-        workflow = Workflow(stream_callback=stream_callback).create_workflow_graph()
+        checkpointer = await get_postgres_checkpointer()
+        workflow = Workflow(
+            stream_callback=stream_callback,
+            checkpointer=checkpointer,
+        ).create_workflow_graph()
+
+        incoming_messages = workflow_state["messages_state"]["messages"]
+        latest_user_message = incoming_messages[-1]
+        snapshot = await workflow.aget_state(config)
+        saved_messages = snapshot.values.get("messages_state", {}).get("messages", [])
+        if saved_messages:
+            messages = [*saved_messages, latest_user_message]
+        else:
+            messages = incoming_messages
+        workflow_state["messages_state"] = MessagesState(messages=messages)
+
         result = await workflow.ainvoke(workflow_state, config=config)
 
         while True:
             snapshot = await workflow.aget_state(config)
             if not snapshot.next:
-                return result
+                break
 
             result = await workflow.ainvoke(
                 Command(resume="A human agent will follow up with you shortly."),
                 config=config,
             )
+
+        reply = _format_workflow_reply(result)
+        messages = result.get("messages_state", {}).get("messages", [])
+        if not messages or not isinstance(messages[-1], AIMessage) or messages[-1].content != reply:
+            messages = [*messages, AIMessage(content=reply)]
+            result["messages_state"] = MessagesState(messages=messages)
+            await workflow.aupdate_state(config, {"messages_state": MessagesState(messages=messages)})
+        return result
     finally:
         stream_callback(None)
 
@@ -157,11 +185,12 @@ def _server_sent_event(event: dict) -> str:
 def _format_workflow_reply(result: dict) -> str:
     """Convert workflow output into readable assistant reply text."""
     recipe_context = result.get("recipe_context")
-    if isinstance(recipe_context, str):
-        return recipe_context
-    recipes = getattr(recipe_context, "recipes", []) if recipe_context else []
-    if recipes:
-        return "\n\n".join(_format_recipe(recipe) for recipe in recipes)
+    if result.get("is_recipe_needed"):
+        if isinstance(recipe_context, str):
+            return recipe_context
+        recipes = getattr(recipe_context, "recipes", []) if recipe_context else []
+        if recipes:
+            return "\n\n".join(_format_recipe(recipe) for recipe in recipes)
 
     messages = result.get("messages_state", {}).get("messages", [])
     for message in reversed(messages):

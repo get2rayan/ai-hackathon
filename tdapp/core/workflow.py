@@ -1,9 +1,12 @@
+import asyncio
+import os
 from uuid import uuid4
 
 from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_openai import OpenAIEmbeddings
 from langgraph.graph import START, MessagesState, StateGraph, END
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from psycopg_pool import AsyncConnectionPool
 from langgraph.types import Command
 from tdapp.core.recipe_handler import RecipeHandler
 from tdapp.core.state import UserRecipeIntent
@@ -19,7 +22,41 @@ from langchain_redis import RedisSemanticCache
 
 REDIS_URL = "redis://localhost:6379"
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-memory = MemorySaver()
+_postgres_pool = None
+_postgres_checkpointer = None
+_checkpointer_init_lock = None
+
+
+async def get_postgres_checkpointer() -> AsyncPostgresSaver:
+    """Return the initialized PostgreSQL checkpointer shared by workflows."""
+    global _postgres_pool, _postgres_checkpointer, _checkpointer_init_lock
+    if _postgres_checkpointer is not None:
+        return _postgres_checkpointer
+
+    if _checkpointer_init_lock is None:
+        _checkpointer_init_lock = asyncio.Lock()
+    async with _checkpointer_init_lock:
+        if _postgres_checkpointer is not None:
+            return _postgres_checkpointer
+
+        postgres_uri = os.environ.get("LANGGRAPH_POSTGRES_URI")
+        if not postgres_uri:
+            raise RuntimeError("LANGGRAPH_POSTGRES_URI must be set to enable persistent chat memory.")
+
+        pool = AsyncConnectionPool(
+            conninfo=postgres_uri,
+            min_size=1,
+            max_size=10,
+            kwargs={"autocommit": True, "prepare_threshold": 0, "options": "-c search_path=recipe"},
+            open=False,
+        )
+        await pool.open(wait=True)
+        checkpointer = AsyncPostgresSaver(pool)
+        await checkpointer.setup()
+
+        _postgres_pool = pool
+        _postgres_checkpointer = checkpointer
+        return _postgres_checkpointer
 
 
 # # Initialize the Redis semantic cache
@@ -35,9 +72,10 @@ memory = MemorySaver()
 
 class Workflow():
 
-    def __init__(self, stream_callback=None):
+    def __init__(self, stream_callback=None, checkpointer=None):
         self.prompt_handler = PromptHandler(stream_callback=stream_callback)
         self.recipe_handler = RecipeHandler(stream_callback=stream_callback)
+        self.checkpointer = checkpointer
 
 
     def check_user_intent(self, state: WorkflowState) -> dict:
@@ -119,7 +157,7 @@ class Workflow():
         graph_builder.add_edge("get_promo_items", "get_recipes")
         graph_builder.add_edge("get_recipes", END)
         
-        graph = graph_builder.compile(checkpointer=memory)
+        graph = graph_builder.compile(checkpointer=self.checkpointer)
 
         #display the graph in mermaid format
         # print(graph.get_graph().draw_mermaid())
@@ -133,7 +171,8 @@ async def _run_chat_workflow():
     # default_user_prompt:str = "I am at Store 21 and I want to make biryani. I have chicken and rice."
     # default_user_prompt:str = "I want to make biryani. I have chicken and rice."
     default_user_prompt:str = "I want to get to a representative. I am not happy."
-    chat_workflow = Workflow().create_workflow_graph()
+    checkpointer = await get_postgres_checkpointer()
+    chat_workflow = Workflow(checkpointer=checkpointer).create_workflow_graph()
     
     # display graph
     # display(Image(chat_workflow.get_graph().draw_mermaid_png()))

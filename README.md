@@ -13,6 +13,8 @@ The Flask chat endpoint in `tdapp/pages.py` sends each user turn to the LangGrap
 
 The chat page stores up to 50 displayed messages in browser `localStorage` and sends up to 20 prior turns with each request. Use **Clear chat** to remove the saved transcript. Human-agent requests currently resume with a placeholder message that a representative will follow up; no live human-agent service is connected.
 
+LangGraph checkpoints are stored in PostgreSQL. The browser keeps a stable conversation ID, which is used as the checkpoint `thread_id`, so checkpointed workflow state can be restored across requests and application restarts. The checkpoint tables are created automatically the first time the app connects.
+
 `RAGHandler` uses OpenAI `text-embedding-3-small` embeddings over `tdapp/data/recipes_dataset.json`. If `faiss_index/index.faiss` is missing, the index is built from the recipe data and saved locally. This requires a working OpenAI API key.
 
 ## Requirements
@@ -23,6 +25,7 @@ The chat page stores up to 50 displayed messages in browser `localStorage` and s
 - An OpenRouter API key and base URL for chat-model requests
 - A `DEPLOYMENT_NAME` accepted by the configured model providers
 - MySQL and a database containing the `store_items` table for store-product lookups
+- PostgreSQL for persistent LangGraph checkpoints
 
 ## Setup
 
@@ -46,11 +49,15 @@ MYSQL_USER=your-mysql-user
 MYSQL_PASSWORD=your-mysql-password
 MYSQL_DB=your-database-name
 
+LANGGRAPH_POSTGRES_URI=postgresql://postgres:your-password@localhost:5432/ai_hackathon
+
 FLASK_APP=tdapp
 FLASK_RUN_PORT=4000
 ```
 
 The OpenAI key is used by the OpenAI client and embeddings; the OpenRouter values configure `ChatOpenAI`. The selected `DEPLOYMENT_NAME` must be available for the configured model calls.
+
+Create the PostgreSQL database named in `LANGGRAPH_POSTGRES_URI` before starting the app. The connection user needs permission to create the LangGraph checkpoint tables. URL-encode special characters in the password portion of the URI.
 
 Load the bundled product data into MySQL if the table has not already been populated. This command replaces the `store_items` table with data from the bundled product CSV:
 
@@ -84,10 +91,10 @@ This uses a sample prompt and accepts subsequent prompts in the terminal. When a
 
 ## Main modules
 
-- `tdapp/pages.py`: Flask routes, chat handling, interrupt resumption, and response formatting
+- `tdapp/pages.py`: Flask routes, chat handling, persistent thread restoration, interrupt resumption, and response formatting
 - `tdapp/templates/pages/home.html`: browser chat UI and local transcript persistence
 - `tdapp/core/prompt_handler.py`: intent detection, structured extraction, and chat responses
-- `tdapp/core/workflow.py`: LangGraph orchestration and terminal chat loop
+- `tdapp/core/workflow.py`: LangGraph orchestration, PostgreSQL checkpointer setup, and terminal chat loop
 - `tdapp/core/recipe_handler.py`: store-product lookup and structured recipe generation
 - `tdapp/core/rag_handler.py`: FAISS index loading and recipe-context retrieval
 - `tdapp/core/state.py`: intent, recipe, and workflow data models

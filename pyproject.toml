@@ -12,11 +12,13 @@ dependencies = [
     "langchain-redis>=0.2.6",
     "langfuse>=5.1.0",
     "langgraph>=1.2.11",
+    "langgraph-checkpoint-postgres>=3.2.0",
     "mlflow>=3.17.0",
     "mysql-connector-python>=26.7.0",
     "openai>=3.13.0",
     "openai-agents>=0.23.1",
     "pandas>=3.0.5",
+    "psycopg[binary,pool]>=3.3.8",
     "python-dotenv>=1.2.3",
 ]
 

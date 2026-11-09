@@ -29,6 +29,7 @@
   <script>
     (() => {
       const storageKey = "store-recipe-chat-v1";
+      const threadStorageKey = "store-recipe-thread-v1";
       const chatLog = document.getElementById("chat-log");
       const emptyMessage = document.getElementById("chat-empty");
       const form = document.getElementById("chat-form");
@@ -36,6 +37,11 @@
       const sendButton = document.getElementById("send-message");
       const status = document.getElementById("chat-status");
       let messages = [];
+      let threadId = localStorage.getItem(threadStorageKey);
+      if (!threadId) {
+        threadId = crypto.randomUUID();
+        localStorage.setItem(threadStorageKey, threadId);
+      }
 
       try {
         const storedMessages = JSON.parse(localStorage.getItem(storageKey) || "[]");
@@ -84,7 +90,7 @@
           const response = await fetch(form.action, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt, messages: priorMessages })
+            body: JSON.stringify({ prompt, messages: priorMessages, thread_id: threadId })
           });
           if (!response.ok) {
             const result = await response.json();
@@ -149,6 +155,8 @@
       document.getElementById("clear-chat").addEventListener("click", () => {
         messages = [];
         localStorage.removeItem(storageKey);
+        threadId = crypto.randomUUID();
+        localStorage.setItem(threadStorageKey, threadId);
         chatLog.querySelectorAll(".chat-message").forEach(message => message.remove());
         emptyMessage.hidden = false;
         input.focus();
