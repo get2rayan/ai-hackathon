@@ -4,14 +4,14 @@ A Store recipe assistant prototype with a browser-based chat interface. It extra
 
 ## Application flow
 
-The Flask chat endpoint in `tdapp/pages.py` sends each user turn to the LangGraph workflow in `tdapp/core/workflow.py`:
+The Flask frontend and LangServe workflow API run as separate services. The browser sends each chat turn directly to the LangServe endpoint in `tdapp/langserve_app.py`, which invokes the LangGraph workflow in `tdapp/core/workflow.py`:
 
 1. `PromptHandler` identifies whether the request is recipe-related or asks for human-agent assistance, and extracts structured recipe intent using the `UserRecipeIntent` schema.
 2. `RecipeHandler` requests store products through `store_products`. Product lookup uses MySQL filters for store and department; user-provided ingredients are prioritized and the combined list is capped at 10 items.
 3. For recipe requests, the agent builds a recipe query from the extracted intent and available ingredients, then can retrieve relevant context from the FAISS index. The current RAG lookup returns one matching recipe document.
-4. The workflow returns structured recipe data or a text response. The Flask endpoint formats that result for the chat transcript.
+4. The API formats the workflow result and returns it to the browser.
 
-The chat page stores up to 50 displayed messages in browser `localStorage` and sends up to 20 prior turns with each request. Use **Clear chat** to remove the saved transcript. Human-agent requests currently resume with a placeholder message that a representative will follow up; no live human-agent service is connected.
+The chat page stores up to 50 displayed messages in browser `localStorage`. A stable conversation ID is sent with each request so the workflow can restore state from PostgreSQL. Use **Clear chat** to remove the saved transcript and start a new conversation. Human-agent requests currently resume with a placeholder message that a representative will follow up; no live human-agent service is connected.
 
 LangGraph checkpoints are stored in PostgreSQL. The browser keeps a stable conversation ID, which is used as the checkpoint `thread_id`, so checkpointed workflow state can be restored across requests and application restarts. The checkpoint tables are created automatically the first time the app connects.
 
@@ -51,9 +51,17 @@ MYSQL_DB=your-database-name
 
 LANGGRAPH_POSTGRES_URI=postgresql://postgres:your-password@localhost:5432/ai_hackathon
 
-FLASK_APP=tdapp
-FLASK_RUN_PORT=4000
 ```
+
+For the separate web services, set these additional `.env` values (also shown in `.env.template`):
+
+```dotenv
+FLASK_RUN_PORT=5000
+LANGSERVE_URL=http://127.0.0.1:8000
+FRONTEND_ORIGINS=http://127.0.0.1:5000,http://localhost:5000
+```
+
+`LANGSERVE_URL` configures the API URL used by the Flask page, while `FRONTEND_ORIGINS` is the comma-separated list of browser origins allowed by the API. Change both for your deployment as needed.
 
 The OpenAI key is used by the OpenAI client and embeddings; the OpenRouter values configure `ChatOpenAI`. The selected `DEPLOYMENT_NAME` must be available for the configured model calls.
 
@@ -67,15 +75,21 @@ uv run python -m tdapp.data.sql_loader
 
 Only run the loader when you intend to create or replace that table.
 
-## Run the Flask app
+## Run the app
 
-From the repository root:
+Run each service in a separate terminal from the repository root. Start the workflow API:
 
 ```bash
-uv run flask --app tdapp run --debug
+uv run uvicorn tdapp.langserve_app:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Open <http://127.0.0.1:4000/> in a browser (or use the port configured by `FLASK_RUN_PORT`). Chat requests require access to the configured model providers and MySQL. If the FAISS index needs to be created, the first request also requires OpenAI embedding access.
+In a second terminal, start the Flask frontend:
+
+```bash
+uv run flask --app tdapp run --debug --host 127.0.0.1 --port 5000
+```
+
+Open <http://127.0.0.1:5000/> in a browser. Set `LANGSERVE_URL` to the workflow service's origin in the frontend environment, and list the browser-facing frontend origin(s) in the API's comma-separated `FRONTEND_ORIGINS`. The workflow API is available at <http://127.0.0.1:8000/api/workflow>; the browser uses `/api/workflow/stream`, and clients that do not need streaming can use `/api/workflow/invoke`. Requests contain `input.prompt` and `input.thread_id`; responses include both the reply and the thread ID. Chat requests require access to the configured model providers and MySQL. If the FAISS index needs to be created, the first request also requires OpenAI embedding access.
 
 ![alt text](image.png)
 
@@ -91,7 +105,9 @@ This uses a sample prompt and accepts subsequent prompts in the terminal. When a
 
 ## Main modules
 
-- `tdapp/pages.py`: Flask routes, chat handling, persistent thread restoration, interrupt resumption, and response formatting
+- `tdapp/langserve_app.py`: standalone LangServe workflow API
+- `tdapp/pages.py`: Flask frontend page routes
+- `tdapp/core/workflow_service.py`: shared workflow invocation, checkpoint restoration, interrupt resumption, and reply formatting
 - `tdapp/templates/pages/home.html`: browser chat UI and local transcript persistence
 - `tdapp/core/prompt_handler.py`: intent detection, structured extraction, and chat responses
 - `tdapp/core/workflow.py`: LangGraph orchestration, PostgreSQL checkpointer setup, and terminal chat loop

@@ -3,3 +3,4 @@ nb
 faiss_index
 .venv
 .env
+.claude
