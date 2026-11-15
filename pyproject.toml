@@ -18,6 +18,7 @@ dependencies = [
     "mysql-connector-python>=26.7.0",
     "openai>=3.13.0",
     "openai-agents>=0.23.1",
+    "openinference-instrumentation-openai-agents>=2.8.3",
     "pandas>=3.0.5",
     "psycopg[binary,pool]>=3.3.8",
     "python-dotenv>=1.2.3",

@@ -42,6 +42,9 @@ OPENAI_API_KEY=your-openai-api-key
 OPENROUTER_API_KEY=your-openrouter-api-key
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 DEPLOYMENT_NAME=your-model-name
+LANGFUSE_PUBLIC_KEY=your-langfuse-public-key
+LANGFUSE_SECRET_KEY=your-langfuse-secret-key
+LANGFUSE_BASE_URL=https://cloud.langfuse.com
 
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
@@ -63,7 +66,7 @@ FRONTEND_ORIGINS=http://127.0.0.1:5000,http://localhost:5000
 
 `LANGSERVE_URL` configures the API URL used by the Flask page, while `FRONTEND_ORIGINS` is the comma-separated list of browser origins allowed by the API. Change both for your deployment as needed.
 
-The OpenAI key is used by the OpenAI client and embeddings; the OpenRouter values configure `ChatOpenAI`. The selected `DEPLOYMENT_NAME` must be available for the configured model calls.
+The OpenAI key is used by the OpenAI client and embeddings; the OpenRouter values configure `ChatOpenAI`. The selected `DEPLOYMENT_NAME` must be available for the configured model calls. Langfuse credentials enable workflow, direct intent-decision, and OpenAI Agents SDK tracing. Use your region's base URL or your self-hosted URL in `LANGFUSE_BASE_URL`.
 
 Create the PostgreSQL database named in `LANGGRAPH_POSTGRES_URI` before starting the app. The connection user needs permission to create the LangGraph checkpoint tables. URL-encode special characters in the password portion of the URI.
 

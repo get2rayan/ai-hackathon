@@ -1,6 +1,7 @@
 import os
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
+from langfuse import get_client
 from openai import OpenAI
 import dotenv
 from tdapp.core.state import UserRecipeIntent, WorkflowState
@@ -28,6 +29,7 @@ class PromptHandler():
         )
         self.structuredClient = self.chatClient.with_structured_output(schema=UserRecipeIntent)
         self.decisionClient = OpenAI()
+        self.langfuse = get_client()
         self.deployed_model = os.environ.get("DEPLOYMENT_NAME")
 
     
@@ -40,39 +42,49 @@ class PromptHandler():
         )
         print(f"User prompt received: {user_message}")
 
-        decision = self.decisionClient.decisions.create(
+        # The Decisions API is not a LangChain model, so record it explicitly.
+        with self.langfuse.start_as_current_observation(
+            name="classify-user-intent",
+            as_type="generation",
             model=self.deployed_model,
-            input = user_message,
-            questions=[
-                {
-                    "type": "predicate",
-                    "name": "is_recipe_needed",
-                    "instructions": "Is the user looking for a new recipe suggestion?"
-                },
-                {
-                    "type": "predicate",
-                    "name": "is_human_agent_needed",
-                    "instructions": "Is the user looking for a human agent assistance?"
-                },
-                {
-                    "type": "choice",
-                    "name": "emotional_level",
-                    "instructions": "What is the user's emotional level?",
-                    "choices": [
-                        {"value": "Happy", "description": "The user is feeling happy."},
-                        {"value": "Sad", "description": "The user is feeling sad."},
-                        {"value": "Angry", "description": "The user is feeling angry."},
-                        {"value": "Neutral", "description": "The user is feeling neutral."}
-                    ]
-                }
-            ]
-        )
+            input=user_message,
+        ) as generation:
+            decision = self.decisionClient.decisions.create(
+                model=self.deployed_model,
+                input=user_message,
+                questions=[
+                    {
+                        "type": "predicate",
+                        "name": "is_recipe_needed",
+                        "instructions": "Is the user looking for a new recipe suggestion?"
+                    },
+                    {
+                        "type": "predicate",
+                        "name": "is_human_agent_needed",
+                        "instructions": "Is the user looking for a human agent assistance?"
+                    },
+                    {
+                        "type": "choice",
+                        "name": "emotional_level",
+                        "instructions": "What is the user's emotional level?",
+                        "choices": [
+                            {"value": "Happy", "description": "The user is feeling happy."},
+                            {"value": "Sad", "description": "The user is feeling sad."},
+                            {"value": "Angry", "description": "The user is feeling angry."},
+                            {"value": "Neutral", "description": "The user is feeling neutral."}
+                        ]
+                    }
+                ]
+            )
+            intent = {
+                "is_recipe_needed": decision.answers[0].probability > 0.6,
+                "is_human_agent_needed": decision.answers[1].probability > 0.5,
+                "emotional_level": decision.answers[2].choice or "Neutral",
+            }
+            generation.update(output=intent)
+
         print(f"\nDecision: {decision.answers} for user message: '{user_message}'")
-        return {
-            "is_recipe_needed": True if decision.answers[0].probability > 0.6 else False,
-            "is_human_agent_needed": True if decision.answers[1].probability > 0.5 else False,
-            "emotional_level": decision.answers[2].choice if decision.answers[2].choice else "Neutral"
-        }
+        return intent
 
 
     def handle_human_agent(self, messages: list[BaseMessage]) -> dict:

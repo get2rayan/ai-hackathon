@@ -4,14 +4,17 @@ import os
 from collections.abc import AsyncIterator
 from uuid import UUID, uuid4
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import Runnable, RunnableConfig
 from langgraph.graph import MessagesState
+from langfuse import get_client
+from langfuse.langchain import CallbackHandler
 from langserve import add_routes
+from openinference.instrumentation.openai_agents import OpenAIAgentsInstrumentor
 from pydantic import BaseModel, Field, field_validator
-from dotenv import load_dotenv
 
 from tdapp.core.state import WorkflowState
 from tdapp.core.workflow_service import format_workflow_reply, invoke_workflow_turn
@@ -38,6 +41,11 @@ class WorkflowResponse(BaseModel):
     thread_id: str
 
 
+# Initialize Langfuse's OpenTelemetry provider before instrumenting Agents SDK runs.
+langfuse_client = get_client()
+OpenAIAgentsInstrumentor().instrument()
+
+
 class WorkflowRunnable(Runnable[dict, dict]):
     def _prepare(self, input: dict) -> tuple[WorkflowRequest, dict]:
         request = WorkflowRequest.model_validate(input)
@@ -46,7 +54,10 @@ class WorkflowRunnable(Runnable[dict, dict]):
             thread_id = str(UUID(request.thread_id or ""))
         except (TypeError, ValueError, AttributeError):
             thread_id = str(uuid4())
-        return request, {"configurable": {"thread_id": thread_id}}
+        return request, {
+            "configurable": {"thread_id": thread_id},
+            "callbacks": [CallbackHandler()],
+        }
 
     async def _run(
         self,
